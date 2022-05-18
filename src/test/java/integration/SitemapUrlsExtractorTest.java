@@ -1,6 +1,8 @@
+package integration;
+
 import dto.CarCategoryUrls;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import scraper.SitemapUrlsExtractor;
 
@@ -9,10 +11,10 @@ import java.util.List;
 
 public class SitemapUrlsExtractorTest {
 
-    private SitemapUrlsExtractor underTest;
+    private static SitemapUrlsExtractor underTest;
 
-    @BeforeEach
-    void setUp() throws IOException {
+    @BeforeAll
+    static void setUp() throws IOException {
         underTest = new SitemapUrlsExtractor();
     }
 

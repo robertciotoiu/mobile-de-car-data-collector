@@ -1,6 +1,9 @@
 package scraper;
 
+import connection.JsoupWrapper;
 import dto.CarCategoryUrls;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -10,13 +13,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SitemapUrlsExtractor {
+    private Logger logger = LogManager.getLogger(this.getClass());
     private static final String SITEMAP_URL = "https://www.mobile.de/sitemap.xml";
-    private final Document doc;
-
-    public SitemapUrlsExtractor() throws IOException {
-        this.doc = Jsoup.connect(SITEMAP_URL).get();
-    }
-
+    private final JsoupWrapper jsoupWrapper = new JsoupWrapper();
 
     public List<CarCategoryUrls> getAllCategoryUrls() {
         List<String> carSpecUrls = getCarSpecUrls();
@@ -27,6 +26,12 @@ public class SitemapUrlsExtractor {
     }
 
     private List<String> getCarSpecUrls() {
+        Document doc = null;
+        try {
+            doc = jsoupWrapper.getHtml(SITEMAP_URL);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return doc.getElementsByTag("loc")
                 .stream()
                 .map(Element::text)
