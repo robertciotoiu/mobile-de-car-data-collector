@@ -6,6 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Random;
 
 public final class JsoupWrapper {
@@ -21,6 +22,7 @@ public final class JsoupWrapper {
      */
     public Document getHtml(String Url) throws IOException {
         try {
+            logger.info("HTTP get request at address: " + Url + " at UTC time: " + Instant.now().toString());
             wait(random.nextInt(2, 5));
         } catch (InterruptedException e) {
             logger.fatal("Sleep failed! Irresponsible parsing.", e);
