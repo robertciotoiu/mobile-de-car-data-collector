@@ -1,6 +1,6 @@
-#Welcome to Mobile.de scraper
+# Welcome to Mobile.de scraper
 
-###Scope
+### Scope
 - Retrieve all car announcement
 - Responsible scraping by:
   - log each http request to mobile.de website
