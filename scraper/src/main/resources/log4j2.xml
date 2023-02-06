@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+<!--    <Appenders>
+        <Console name="LogToConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>-->
+    <Appenders>
+        <RollingFile name="TimestampFile" fileName="logs/mobile-de-car-data-scraper_${date:yyyy-MM-dd_HHmmssZ}.log"
+                     filePattern="logs/mobile-de-car-data-scraper_%d{yyyy-MM-dd_HHmmssZ}-%i.log">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss,SSSZ} %p %c{1.} [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="TimestampFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
