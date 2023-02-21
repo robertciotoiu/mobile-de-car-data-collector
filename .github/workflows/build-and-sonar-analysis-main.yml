@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: CI Maven Build & Sonar
+name: build
 
 on:
   push:
@@ -35,6 +35,13 @@ jobs:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
+
+    - name: Start RabbitMQ
+      uses: namoshek/rabbitmq-github-action@v1
+      with:
+        version: '3.8.9'
+        ports: '5672:5672'
+        container-name: 'mobile-de-urls-integration-test'
 
     - name: Build and analyze
       env:

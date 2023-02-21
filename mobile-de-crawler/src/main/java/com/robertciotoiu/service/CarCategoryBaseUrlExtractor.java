@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,20 +25,19 @@ import java.util.List;
  * etc.
  * But to avoid confusing namings like CarSpec, we will call them Car Category URLs.
  */
-public final class CarCategoryBaseUrlExtractor extends JsoupWrapper {
+@Component
+public class CarCategoryBaseUrlExtractor {
+    @Autowired
+    private JsoupWrapper jsoupWrapper;
     private static final String EN_LANGUAGE_PATH = "?lang=en";
     private static final Logger logger = LogManager.getLogger(CarCategoryBaseUrlExtractor.class);
 
-    private CarCategoryBaseUrlExtractor() {
-        throw new IllegalStateException("Static class");
-    }
-
-    public static List<String> extract(String url) throws IOException {
-        Document doc = getHtml(url);
+    public List<String> extract(String url) throws IOException {
+        Document doc = jsoupWrapper.getHtml(url);
         return extract(doc);
     }
 
-    public static List<String> extract(Document doc) {
+    public List<String> extract(Document doc) {
         var extractedUrls = new ArrayList<String>();
         Elements links = doc.select("loc");
 

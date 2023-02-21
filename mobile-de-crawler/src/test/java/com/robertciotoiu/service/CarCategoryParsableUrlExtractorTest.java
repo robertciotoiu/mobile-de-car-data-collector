@@ -3,11 +3,16 @@ package com.robertciotoiu.service;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.IOException;
 
+@SpringBootTest
 class CarCategoryParsableUrlExtractorTest {
+    @Autowired
+    CarCategoryParsableUrlExtractor carCategoryParsableUrlExtractor;
     private final static String URL_WITH_50_SUB_URLS = "src/test/resources/car-category-with-50-sub-urls.html";
     private final static String URL_WITH_0_SUB_URLS = "src/test/resources/car-category-with-0-sub-urls.html";
     private final static String URL_WITH_2_SUB_URLS = "src/test/resources/car-category-with-2-sub-urls.html";
@@ -19,7 +24,7 @@ class CarCategoryParsableUrlExtractorTest {
 
         Assertions.assertNotNull(doc, "Check the input file!");
 
-        var links = CarCategoryParsableUrlExtractor.getUrls("Dummy" ,doc);
+        var links = carCategoryParsableUrlExtractor.sendParsableUrls("Dummy" ,doc);
 
         Assertions.assertNotNull(links);
         Assertions.assertEquals(50, links.size());
@@ -32,7 +37,7 @@ class CarCategoryParsableUrlExtractorTest {
 
         Assertions.assertNotNull(doc, "Check the input file!");
 
-        var links = CarCategoryParsableUrlExtractor.getUrls("Dummy" ,doc);
+        var links = carCategoryParsableUrlExtractor.sendParsableUrls("Dummy" ,doc);
 
         Assertions.assertNotNull(links);
         Assertions.assertEquals(1, links.size());
@@ -45,7 +50,7 @@ class CarCategoryParsableUrlExtractorTest {
 
         Assertions.assertNotNull(doc, "Check the input file!");
 
-        var links = CarCategoryParsableUrlExtractor.getUrls("Dummy" ,doc);
+        var links = carCategoryParsableUrlExtractor.sendParsableUrls("Dummy" ,doc);
 
         Assertions.assertNotNull(links);
         Assertions.assertEquals(2, links.size());

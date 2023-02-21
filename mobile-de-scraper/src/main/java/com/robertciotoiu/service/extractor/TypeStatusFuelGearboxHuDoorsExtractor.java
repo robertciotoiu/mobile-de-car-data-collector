@@ -1,4 +1,4 @@
-package com.robertciotoiu.service;
+package com.robertciotoiu.service.extractor;
 
 import com.robertciotoiu.data.model.listing.FuelGearboxHuDoors;
 import com.robertciotoiu.data.model.listing.TypeFuelGearboxHuDoors;
@@ -8,9 +8,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
+@Component
 public class TypeStatusFuelGearboxHuDoorsExtractor {
     private static final Logger logger = LogManager.getLogger(TypeStatusFuelGearboxHuDoorsExtractor.class);
 
@@ -21,11 +23,7 @@ public class TypeStatusFuelGearboxHuDoorsExtractor {
     private static final String DOORS_NUMBER = "doorsNumber";
     private static final HashMap<String, String> stringToCarFeature = prepareCarFeatures();
 
-    private TypeStatusFuelGearboxHuDoorsExtractor() {
-        throw new IllegalStateException("Static class");
-    }
-
-    public static TypeStatusFuelGearboxHuDoors extractTypeStatusFuelGearboxHuDoors(Elements typeStatusFuelGearboxHuDoorsElements, String listingId) {
+    public TypeStatusFuelGearboxHuDoors extractTypeStatusFuelGearboxHuDoors(Elements typeStatusFuelGearboxHuDoorsElements, String listingId) {
         Element typeStatusFuelGearboxHuDoorsElement;
         try {
             typeStatusFuelGearboxHuDoorsElement = typeStatusFuelGearboxHuDoorsElements.first();
@@ -60,7 +58,7 @@ public class TypeStatusFuelGearboxHuDoorsExtractor {
                 .build();
     }
 
-    private static String extractVehicleCondition(Element typeStatusFuelGearboxHuDoorsElement, String listingId) {
+    private String extractVehicleCondition(Element typeStatusFuelGearboxHuDoorsElement, String listingId) {
         String vehicleCondition = "";
         try {
             vehicleCondition = ((Element) typeStatusFuelGearboxHuDoorsElement.childNode(1)).text();
@@ -71,7 +69,7 @@ public class TypeStatusFuelGearboxHuDoorsExtractor {
         return vehicleCondition;
     }
 
-    private static TypeFuelGearboxHuDoors extractTypeFuelGearboxHuDoors(String typeFuelGearboxHuDoorsString) {
+    private TypeFuelGearboxHuDoors extractTypeFuelGearboxHuDoors(String typeFuelGearboxHuDoorsString) {
         if(typeFuelGearboxHuDoorsString == null){
             return TypeFuelGearboxHuDoors.builder().build();
         }

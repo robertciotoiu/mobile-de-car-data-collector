@@ -1,25 +1,26 @@
 package com.robertciotoiu.service;
 
 import com.robertciotoiu.data.ListingPersistor;
+import com.robertciotoiu.service.extractor.ListingsExtractor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ScraperService {
 
-    public void scrape() {
-        //TODO: take them from RabbitMQ
-        var carSpecPageUrls = new ArrayList<String>();
+    @Autowired
+    ListingsExtractor listingsExtractor;
 
-        scrapeAndIngestListings(carSpecPageUrls);
+    public void scrapeAndIngestListings(String carSpecPageUrl) {
+        var listings = listingsExtractor.extract(carSpecPageUrl);
+        ListingPersistor.persist(listings);
     }
 
-    private void scrapeAndIngestListings(List<String> carSpecPageUrls) {
+    public void scrapeAndIngestListings(List<String> carSpecPageUrls) {
         for (var carSpecPageUrl : carSpecPageUrls) {
-            var listings = ListingsExtractor.extract(carSpecPageUrl);
-            ListingPersistor.persist(listings);
+            scrapeAndIngestListings(carSpecPageUrl);
         }
     }
 }

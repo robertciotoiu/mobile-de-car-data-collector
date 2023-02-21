@@ -2,9 +2,12 @@ package com.robertciotoiu.service;
 
 import com.robertciotoiu.connection.JsoupWrapper;
 import com.robertciotoiu.exception.PaginationNotFoundError;
+import com.robertciotoiu.RabbitMQProducer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,12 +16,19 @@ import java.util.List;
 /**
  * Chrome uses XPath 1.0 => is it safe to use Jsoup.Element.selectXpath as it also uses XPath 1.0.
  */
-public final class CarCategoryParsableUrlExtractor extends JsoupWrapper {
+@Component
+public class CarCategoryParsableUrlExtractor {
     private static final Logger logger = LogManager.getLogger(CarCategoryParsableUrlExtractor.class);
     private static final String EN_LANGUAGE_PATH = "&lang=en";
     private static final String PAGINATION_CLASS_NAME = "pagination";
 
-    private CarCategoryParsableUrlExtractor(){throw new IllegalStateException("Static class");}
+    @Autowired
+    private Paginator paginator;
+    @Autowired
+    private JsoupWrapper jsoupWrapper;
+    @Autowired
+    private RabbitMQProducer rabbitMQProducer;
+
     /**
      * Extracts all URLs for the given CarSpecification URL.
      * Example:
@@ -29,36 +39,33 @@ public final class CarCategoryParsableUrlExtractor extends JsoupWrapper {
      * @param firstPageUrl looks like: https://suchen.mobile.de/auto/mercedes-benz-clk-220.html?lang=en
      * @return all pages for this car category(between 1 and 50)
      */
-    public static List<String> getUrls(String firstPageUrl) {
-        var urls = new ArrayList<String>();
-
+    public void sendParsableUrls(String firstPageUrl) {
         try {
-            var doc = getHtml(firstPageUrl);
-            urls.addAll(getUrls(firstPageUrl, doc));
+            var doc = jsoupWrapper.getHtml(firstPageUrl);
+            var pageUrls = sendParsableUrls(firstPageUrl, doc);
+            rabbitMQProducer.publishMessagesToRabbitMQ(pageUrls);
         } catch (IOException e) {
             logger.warn("Cannot connect to this URL: {}. Exception: {}", firstPageUrl, e);
         }
-
-        return urls;
     }
 
-    public static List<String> getUrls(String firstPageUrl, Document doc) {
+    public List<String> sendParsableUrls(String firstPageUrl, Document doc) {
         var urls = new ArrayList<String>();
         urls.add(firstPageUrl);
 
         if (isAnySubpage(doc)) {
             String lastUrl = extractLastPageUrl(doc);
-            urls.addAll(Paginator.computeAllUrls(lastUrl));
+            urls.addAll(paginator.computeAllUrls(lastUrl));
         }
 
         return urls;
     }
 
-    private static boolean isAnySubpage(Document doc) {
+    private boolean isAnySubpage(Document doc) {
         return !doc.getElementsByClass(PAGINATION_CLASS_NAME).isEmpty();
     }
 
-    private static String extractLastPageUrl(Document doc) {
+    private String extractLastPageUrl(Document doc) {
         var paginationElement = doc
                 .getElementsByClass(PAGINATION_CLASS_NAME)
                 .first();

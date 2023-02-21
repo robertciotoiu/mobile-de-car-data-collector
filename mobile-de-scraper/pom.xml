@@ -15,29 +15,17 @@
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mobile-de-shared</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--Scraping/-->
-        <dependency>
-            <!--TODO: remove this after static code cleanup-->
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.14.3</version>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -52,7 +40,35 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-mongodb</artifactId>
-            <version>4.0.1</version>
+            <version>4.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.robertciotoiu</groupId>
+            <artifactId>mobile-de-car-rabbitmq</artifactId>
+            <version>${mobilede.rabbitmq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.robertciotoiu</groupId>
+            <artifactId>mobile-de-car-rabbitmq</artifactId>
+            <version>${mobilede.rabbitmq.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <version>${spring.version}</version>
         </dependency>
     </dependencies>
 
