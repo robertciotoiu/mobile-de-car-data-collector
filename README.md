@@ -1,5 +1,15 @@
 ## **🚧 Work in progress. Feel free to contribute 🤝**
-# Mobile.de Car Data Scraper
+
+[![build](https://github.com/robertciotoiu/mobile-de-scraper/actions/workflows/build-and-sonar-analysis-main.yml/badge.svg?branch=main)](https://github.com/robertciotoiu/mobile-de-scraper/actions/workflows/build-and-sonar-analysis.yml)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=coverage)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper)
+
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=bugs)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper)
+
+# 📊⛏ Mobile.de Car Data Scraper 
 
 Mobile.de Car Data Scraper is a responsible and ethical data scraping project that retrieves car listing data from [Mobile.de](https://www.mobile.de/). This project enforces delays between requests to avoid overloading the website's servers.
 

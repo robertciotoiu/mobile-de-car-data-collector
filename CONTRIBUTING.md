@@ -6,15 +6,23 @@ We welcome contributions to Mobile.de Car Data Scraper. Here are some guidelines
 
 1. Fork the repository and clone it to your local machine.
 
+
 2. Create a new branch for your changes.
+
 
 3. Make the changes and commit them to your branch.
 
+
 4. Push your branch to your forked repository.
 
-5. Submit a pull request (PR) to the main repository.
 
-6. The PR will be reviewed by the project maintainer, who will provide feedback and/or merge the changes.
+5. *OPTIONAL*: run GitHub Actions workflows locally. Here's how: https://github.com/nektos/act
+
+
+6. Submit a pull request (PR) to the main repository.
+
+
+7. The PR will be reviewed by the project maintainer, who will provide feedback and/or merge the changes.
 
 ## Branch Policy
 
