@@ -22,7 +22,7 @@
         <crawler.version>1.0-SNAPSHOT</crawler.version>
         <scraper.version>1.0-SNAPSHOT</scraper.version>
         <shared.version>1.0-SNAPSHOT</shared.version>
-        <spring.version>3.0.2</spring.version>
+        <spring.version>3.0.3</spring.version>
         <jacoco.version>0.8.8</jacoco.version>
         <jacoco.minimum.coverage>0.40</jacoco.minimum.coverage>
         <sonar.coverage.jacoco.xmlReportPaths>
