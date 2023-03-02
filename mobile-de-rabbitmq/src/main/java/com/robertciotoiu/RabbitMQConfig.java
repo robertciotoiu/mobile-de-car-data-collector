@@ -14,13 +14,13 @@ import org.springframework.context.annotation.Configuration;
 @EnableRabbit
 @Configuration
 public class RabbitMQConfig {
-    @Value("${rabbitmq.host}")
+    @Value("${SPRING_RABBITMQ_HOST}")
     private String rabbitmqHost;
-    @Value("${rabbitmq.port}")
+    @Value("${SPRING_RABBITMQ_PORT}")
     private int rabbitmqPort;
-    @Value("${rabbitmq.username}")
+    @Value("${SPRING_RABBITMQ_USERNAME}")
     private String rabbitmqUsername;
-    @Value("${rabbitmq.password}")
+    @Value("${SPRING_RABBITMQ_PASSWORD}")
     private String rabbitmqPassword;
     @Value("${rabbitmq.queue}")
     private String rabbitmqQueueName;

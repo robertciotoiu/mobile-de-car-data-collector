@@ -16,7 +16,7 @@
         <module>mobile-de-scraper</module>
         <module>mobile-de-shared</module>
         <module>mobile-de-coverage-report-aggregate</module>
-        <module>mobile-de-car-rabbitmq</module>
+        <module>mobile-de-rabbitmq</module>
     </modules>
 
     <properties>
