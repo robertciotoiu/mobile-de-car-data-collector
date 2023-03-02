@@ -1,10 +1,12 @@
 package com.robertciotoiu.service;
 
 import com.robertciotoiu.data.model.listing.*;
-import com.robertciotoiu.service.ListingElementExtractor;
+import com.robertciotoiu.service.extractor.ListingElementExtractor;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,8 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 //TODO assert all fields or entire objects
 //TODO repair tests
+@SpringBootTest
 class ListingElementExtractorTest {
     private static final String LISTING_XPATH = "/html/body/div";
+    @Autowired
+    ListingElementExtractor listingElementExtractor;
 
     @Test
     void testExtractPrivateWithoutVehicleCondition() throws IOException {
@@ -28,7 +33,7 @@ class ListingElementExtractorTest {
 
         Assertions.assertNotNull(doc, "Check the input file!");
 
-        var listing = ListingElementExtractor.extract(doc);
+        var listing = listingElementExtractor.extract(doc);
 
         Assertions.assertEquals("Mazda Mazda Demio 5 Türer Klima 06/2023 HU/AU Be...", listing.getTitle());
     }
@@ -94,7 +99,7 @@ class ListingElementExtractorTest {
                 .build();
 
 
-        var listing = ListingElementExtractor.extract(doc);
+        var listing = listingElementExtractor.extract(doc);
 
         Assertions.assertEquals("Volkswagen Caddy PKW Alltrack AHK+DSG+Xenon+Navi+Kamera", listing.getTitle());
         Assertions.assertEquals(expectedListing, listing);
@@ -102,7 +107,7 @@ class ListingElementExtractorTest {
 
     @Test
     void testPostedDateParser() {
-        var extractedDateTime = ListingElementExtractor.getPostedDateTime("Ad online since Jan 14, 2023, 11:48 PM");
+        var extractedDateTime = listingElementExtractor.getPostedDateTime("Ad online since Jan 14, 2023, 11:48 PM");
         var expectedDateTime = LocalDateTime.of(LocalDate.of(2023, 1, 14), LocalTime.of(23, 48));
 
         assertEquals(expectedDateTime, extractedDateTime);

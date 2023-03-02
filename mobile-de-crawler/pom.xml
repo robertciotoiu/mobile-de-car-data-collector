@@ -15,7 +15,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -23,7 +24,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>mobile-de-shared</artifactId>
-            <version>${shared.version}</version>
+            <version>${mobilede.shared.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.robertciotoiu</groupId>
+            <artifactId>mobile-de-car-rabbitmq</artifactId>
+            <version>${mobilede.rabbitmq.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -37,19 +43,34 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
-            <scope>compile</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <version>${spring.version}</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.robertciotoiu.MobileDeCrawlerApplication</mainClass>
+                    <layout>JAR</layout>
+                </configuration>
                 <version>${spring.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

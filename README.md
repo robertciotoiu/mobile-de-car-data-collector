@@ -1,6 +1,6 @@
 ## **🚧 Work in progress. Feel free to contribute 🤝**
 
-[![build](https://github.com/robertciotoiu/mobile-de-scraper/actions/workflows/build-and-sonar-analysis-main.yml/badge.svg?branch=main)](https://github.com/robertciotoiu/mobile-de-scraper/actions/workflows/build-and-sonar-analysis.yml)
+[![CI Maven Build & Sonar](https://github.com/robertciotoiu/mobile-de-car-data-collector/actions/workflows/build-and-sonar-analysis-main.yml/badge.svg?branch=main)](https://github.com/robertciotoiu/mobile-de-car-data-collector/actions/workflows/build-and-sonar-analysis-main.yml)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=coverage)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper)

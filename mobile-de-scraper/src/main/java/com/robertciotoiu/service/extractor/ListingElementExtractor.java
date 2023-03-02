@@ -1,4 +1,4 @@
-package com.robertciotoiu.service;
+package com.robertciotoiu.service.extractor;
 
 import com.robertciotoiu.data.model.listing.*;
 import com.robertciotoiu.exception.ListingIdNotFoundError;
@@ -6,6 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -14,15 +16,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.robertciotoiu.service.ListingXpath.*;
-import static com.robertciotoiu.service.TypeStatusFuelGearboxHuDoorsExtractor.extractTypeStatusFuelGearboxHuDoors;
+import static com.robertciotoiu.service.extractor.ListingXPath.*;
 
+@Component
 public class ListingElementExtractor {
     private static final Logger logger = LogManager.getLogger(ListingElementExtractor.class);
 
-    private ListingElementExtractor() {
-        throw new IllegalStateException("Static class");
-    }
+    @Autowired
+    TypeStatusFuelGearboxHuDoorsExtractor typeStatusFuelGearboxHuDoorsExtractor;
 
     /**
      * <p>Tries to extract from a listing element as many Listing fields as possibles.<p>
@@ -32,7 +33,7 @@ public class ListingElementExtractor {
      * @param listingElement Jsoup Element containing only the listing html element
      * @return Listing object.
      */
-    public static Listing extract(Element listingElement) {
+    public Listing extract(Element listingElement) {
         var listingBuilder = Listing.builder();
 
         try {
@@ -45,8 +46,8 @@ public class ListingElementExtractor {
         return listingBuilder.build();
     }
 
-    private static String extractAndSetListingId(Element listingElement, Listing.ListingBuilder listingBuilder) {
-        var listingId = listingElement.selectXpath(ListingXpath.LISTING_ID_XPATH).attr("data-listing-id");
+    private String extractAndSetListingId(Element listingElement, Listing.ListingBuilder listingBuilder) {
+        var listingId = listingElement.selectXpath(ListingXPath.LISTING_ID_XPATH).attr("data-listing-id");
         if(listingId.equals("")){
             logger.error("Failed to extract listingId! Listing element: {}", listingElement);
             throw new ListingIdNotFoundError("ListingId not found! Either a change in website structure, either a serious bug. Stopping program execution...");
@@ -56,7 +57,7 @@ public class ListingElementExtractor {
         return listingId;
     }
 
-    private static void extractAndSetListingInformation(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetListingInformation(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         extractAndSetTitle(listingElement, listingId, listingBuilder);
         extractAndSetIsNew(listingElement, listingId, listingBuilder);
         extractAndSetUrl(listingElement, listingId, listingBuilder);
@@ -72,7 +73,7 @@ public class ListingElementExtractor {
 
     }
 
-    private static void extractAndSetTitle(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetTitle(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var title = listingElement.selectXpath(TITLE_XPATH).text();
             listingBuilder.title(title);
@@ -81,7 +82,7 @@ public class ListingElementExtractor {
         }
     }
 
-    private static void extractAndSetIsNew(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetIsNew(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var isNewText = listingElement.selectXpath(IS_NEW_XPATH).text();
             listingBuilder.isNew(isNewText.equals("New"));
@@ -90,7 +91,7 @@ public class ListingElementExtractor {
         }
     }
 
-    private static void extractAndSetUrl(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetUrl(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var url = listingElement.selectXpath(URL_XPATH).attr("href");
             listingBuilder.url(url);
@@ -99,7 +100,7 @@ public class ListingElementExtractor {
         }
     }
 
-    private static void extractAndSetImgUrl(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetImgUrl(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var imgUrl = listingElement.selectXpath(IMG_URL_XPATH).attr("src");
             listingBuilder.imgUrl(imgUrl);
@@ -108,7 +109,7 @@ public class ListingElementExtractor {
         }
     }
 
-    private static void extractAndSetIsElectric(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetIsElectric(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var isElectric = listingElement.selectXpath(IS_ELECTRIC_XPATH).attr("data-has-electric-engine");
             listingBuilder.isElectric(isElectric.equals("true"));
@@ -117,7 +118,7 @@ public class ListingElementExtractor {
         }
     }
 
-    private static void extractAndSetPostedDate(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetPostedDate(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var postedDate = listingElement.selectXpath(POSTED_DATE_XPATH).text();
             listingBuilder.postedDate(getPostedDateTime(postedDate));
@@ -126,7 +127,7 @@ public class ListingElementExtractor {
         }
     }
 
-    private static void extractAndSetRegMilPow(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetRegMilPow(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var regMilPow = listingElement.selectXpath(REG_MIL_POW_XPATH).text();
             listingBuilder.regMilPow(extractRegMilPow(regMilPow));
@@ -136,17 +137,17 @@ public class ListingElementExtractor {
         }
     }
 
-    private static void extractAndSetTypeStatusFuelGearboxHuDoors(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetTypeStatusFuelGearboxHuDoors(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var typeStatusFuelGearboxHuDoors = listingElement.selectXpath(TYPE_FUEL_GEARBOX_HU_DOORS_XPATH);
-            listingBuilder.typeStatusFuelGearboxHuDoors(extractTypeStatusFuelGearboxHuDoors(typeStatusFuelGearboxHuDoors, listingId));
+            listingBuilder.typeStatusFuelGearboxHuDoors(typeStatusFuelGearboxHuDoorsExtractor.extractTypeStatusFuelGearboxHuDoors(typeStatusFuelGearboxHuDoors, listingId));
         } catch (Exception e) {
             //TODO make sure inside the method there is a logging for every failed field
             logger.warn("Failed to extract typeStatusFuelGearboxHuDoors for listing: {}", listingId);
         }
     }
 
-    private static void extractAndSetVehicleData(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetVehicleData(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var vehicleDataString = listingElement.selectXpath(CONSUMPTION_EMISSIONS_XPATH).text();
             listingBuilder.consumptionEmissions(extractConsumptionEmissions(vehicleDataString));
@@ -156,7 +157,7 @@ public class ListingElementExtractor {
         }
     }
 
-    private static void extractAndSetVehicleExtras(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetVehicleExtras(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var vehicleExtras1 = listingElement.selectXpath(VEHICLE_EXTRAS_1_XPATH);
             var vehicleExtras2 = listingElement.selectXpath(VEHICLE_EXTRAS_2_XPATH);
@@ -168,7 +169,7 @@ public class ListingElementExtractor {
         }
     }
 
-    private static void extractAndSetSeller(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetSeller(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
 
             var seller = listingElement.selectXpath(SELLER_XPATH);
@@ -179,7 +180,7 @@ public class ListingElementExtractor {
         }
     }
 
-    private static void extractAndSetPrice(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetPrice(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var price = listingElement.selectXpath(PRICE_XPATH);
             var priceRating = listingElement.selectXpath(PRICE_RATING_XPATH);
@@ -195,7 +196,7 @@ public class ListingElementExtractor {
     }
 
     // TODO: wrap as many important operations as possible with clear indicative logs(usefull for debugging)
-    private static Seller extractAndSetSeller(Elements sellerElements) {
+    private Seller extractAndSetSeller(Elements sellerElements) {
         Element sellerElement;
 
         try {
@@ -239,7 +240,7 @@ public class ListingElementExtractor {
         return seller.build();
     }
 
-    private static List<String> extractAndSetVehicleExtras(Elements vehicleExtras1, Elements vehicleExtras2, Elements vehicleExtras3) {
+    private List<String> extractAndSetVehicleExtras(Elements vehicleExtras1, Elements vehicleExtras2, Elements vehicleExtras3) {
         if (vehicleExtras1.isEmpty())
             return Collections.emptyList();
 
@@ -252,7 +253,7 @@ public class ListingElementExtractor {
         return vehicleExtras;
     }
 
-    private static ConsumptionEmissions extractConsumptionEmissions(String vehicleDataString) {
+    private ConsumptionEmissions extractConsumptionEmissions(String vehicleDataString) {
         var consumptionEmissions = vehicleDataString.substring(vehicleDataString.indexOf("ca."));
         var consumptionEmissionsArray = consumptionEmissions.split("\\),");
         var consumption = consumptionEmissionsArray[0].trim() + ")";
@@ -261,7 +262,7 @@ public class ListingElementExtractor {
         return ConsumptionEmissions.builder().consumption(consumption).emissions(emissions).build();
     }
 
-    private static RegMilPow extractRegMilPow(String regMilPowString) {
+    private RegMilPow extractRegMilPow(String regMilPowString) {
         var regMilPowArray = regMilPowString.split(",");
 
         return RegMilPow.builder()
@@ -272,19 +273,19 @@ public class ListingElementExtractor {
                 .build();
     }
 
-    private static int getHp(String regMilPow) {
+    private int getHp(String regMilPow) {
         return Integer.parseInt(regMilPow
                 .substring(regMilPow.indexOf("(") + 1, regMilPow.indexOf(" ", regMilPow.indexOf("(")))
                 .trim());
     }
 
-    private static int getKw(String regMilPow) {
+    private int getKw(String regMilPow) {
         return Integer.parseInt(regMilPow
                 .substring(0, regMilPow.indexOf(" ", 1))
                 .trim());
     }
 
-    private static int getMileage(String regMilPow) {
+    private int getMileage(String regMilPow) {
         String mileageString = regMilPow
                 .substring(0, regMilPow.lastIndexOf(" "))
                 .replace(".", "")
@@ -292,12 +293,12 @@ public class ListingElementExtractor {
         return Integer.parseInt(mileageString);
     }
 
-    public static LocalDateTime getPostedDateTime(String postedDate) {
+    public LocalDateTime getPostedDateTime(String postedDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy, h:mm a");
         return LocalDateTime.parse(postedDate.substring(postedDate.indexOf("since") + 6).trim(), formatter);
     }
 
-    public static YearMonth getRegistrationDate(String registrationDate) {
+    public YearMonth getRegistrationDate(String registrationDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
         return YearMonth.parse(registrationDate.substring(registrationDate.indexOf("FR") + 3).trim(), formatter);
     }

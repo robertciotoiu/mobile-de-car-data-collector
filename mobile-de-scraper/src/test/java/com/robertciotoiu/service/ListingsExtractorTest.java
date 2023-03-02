@@ -1,22 +1,29 @@
 package com.robertciotoiu.service;
 
 import com.robertciotoiu.exception.ListingIdNotFoundError;
+import com.robertciotoiu.service.extractor.ListingsExtractor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.IOException;
 
+@SpringBootTest
 class ListingsExtractorTest {
+
+    @Autowired
+    ListingsExtractor listingsExtractor;
 
     @Test
     void extractListingsWithMultipleAdsTest() throws IOException {
         File in = new File("src/test/resources/listings-with-multiple-ads.html");
         Document doc = Jsoup.parse(in, null);
 
-        var listings = ListingsExtractor.extract(doc);
+        var listings = listingsExtractor.extract(doc);
 
         Assertions.assertNotNull(listings);
         Assertions.assertEquals(21, listings.size());
@@ -27,6 +34,6 @@ class ListingsExtractorTest {
         File in = new File("src/test/resources/listings-missing-listingId.html");
         Document doc = Jsoup.parse(in, null);
 
-        Assertions.assertThrows(ListingIdNotFoundError.class, () -> ListingsExtractor.extract(doc));
+        Assertions.assertThrows(ListingIdNotFoundError.class, () -> listingsExtractor.extract(doc));
     }
 }

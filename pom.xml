@@ -16,12 +16,15 @@
         <module>mobile-de-scraper</module>
         <module>mobile-de-shared</module>
         <module>mobile-de-coverage-report-aggregate</module>
+        <module>mobile-de-car-rabbitmq</module>
     </modules>
 
     <properties>
-        <crawler.version>1.0-SNAPSHOT</crawler.version>
-        <scraper.version>1.0-SNAPSHOT</scraper.version>
-        <shared.version>1.0-SNAPSHOT</shared.version>
+        <mobilede.crawler.version>1.0-SNAPSHOT</mobilede.crawler.version>
+        <mobilede.scraper.version>1.0-SNAPSHOT</mobilede.scraper.version>
+        <mobilede.shared.version>1.0-SNAPSHOT</mobilede.shared.version>
+        <mobilede.rabbitmq.version>1.0-SNAPSHOT</mobilede.rabbitmq.version>
+        <java.version>17</java.version>
         <spring.version>3.0.2</spring.version>
         <jacoco.version>0.8.8</jacoco.version>
         <jacoco.minimum.coverage>0.40</jacoco.minimum.coverage>
@@ -44,7 +47,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.2</version>
+            <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

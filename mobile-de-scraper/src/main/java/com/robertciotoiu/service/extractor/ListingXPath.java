@@ -1,6 +1,6 @@
-package com.robertciotoiu.service;
+package com.robertciotoiu.service.extractor;
 
-public class ListingXpath {
+public class ListingXPath {
     public static final String LISTING_ID_XPATH = "/div/a";
     public static final String TITLE_XPATH = "//div/a/div/div[2]/div[1]/div[1]/div/span[contains(@class,'h3')]";
     public static final String IS_NEW_XPATH = "//div/a/div/div[2]/div[1]/div[1]/div/span[contains(@class,'new-headline-label')]";
@@ -21,7 +21,7 @@ public class ListingXpath {
     public static final String PRICE_XPATH = "/div/a/div/div[2]/div[1]/div[2]/div[1]/span[1]/.";
     public static final String PRICE_RATING_XPATH = "/div/a/div/div[2]/div[1]/div[2]/div[2]/div/.";
 
-    private ListingXpath(){
+    private ListingXPath(){
         throw new IllegalStateException("Static class");
     }
 }

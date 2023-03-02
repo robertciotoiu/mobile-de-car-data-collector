@@ -2,6 +2,7 @@ package com.robertciotoiu.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -14,32 +15,25 @@ import java.util.concurrent.TimeUnit;
 public class CrawlerService {
     private static final Logger logger = LogManager.getLogger(CrawlerService.class);
     private static final String URL = "https://suchen.mobile.de/fahrzeuge/sitemap-pls-carspecification-0.xml";
+    @Autowired
+    private CarCategoryBaseUrlExtractor carCategoryBaseUrlExtractor;
+    @Autowired
+    private CarCategoryParsableUrlExtractor carCategoryParsableUrlExtractor;
 
     @Scheduled(fixedDelayString = "${scheduler.fixed-delay}", timeUnit = TimeUnit.SECONDS)
-    private static void crawl() {
+    private void crawl() {
         logger.info("Start new crawling");
         var carCategoryBaseUrl = getCarCategoryBaseUrl();
-        var parsableUrls = extractParsableUrls(carCategoryBaseUrl);
-        postUrlsToMQ(parsableUrls);
+        extractParsableUrls(carCategoryBaseUrl);
     }
 
-    private static void postUrlsToMQ(List<String> parsableUrls) {
-        //TODO: implement
-        logger.info(parsableUrls);
+    private void extractParsableUrls(List<String> carCategoryBaseUrls) {
+        carCategoryBaseUrls.forEach(carCategoryParsableUrlExtractor::sendParsableUrls);
     }
 
-    private static List<String> extractParsableUrls(List<String> carCategoryBaseUrls) {
-        var parsableUrls = new ArrayList<String>();
-        for (var carCategoryBaseUrl : carCategoryBaseUrls) {
-            var carCategoryParsableUrls = CarCategoryParsableUrlExtractor.getUrls(carCategoryBaseUrl);
-            parsableUrls.addAll(carCategoryParsableUrls);
-        }
-        return parsableUrls;
-    }
-
-    private static List<String> getCarCategoryBaseUrl() {
+    private List<String> getCarCategoryBaseUrl() {
         try {
-            return CarCategoryBaseUrlExtractor.extract(URL);
+            return carCategoryBaseUrlExtractor.extract(URL);
         } catch (IOException e) {
             logger.error("Cannot connect to mobile.de sitemap", e);
         }
