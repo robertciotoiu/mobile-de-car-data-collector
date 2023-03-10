@@ -5,24 +5,24 @@ import com.robertciotoiu.data.repository.ListingRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class ListingPersistor {
     private static final Logger logger = LogManager.getLogger(ListingPersistor.class);
 
-    private ListingPersistor() {
-        throw new IllegalStateException("Static class");
-    }
-
     @Autowired
-    private static ListingRepository repository;
+    private ListingRepository repository;
 
-    public static void persist(List<Listing> listings) {
+    public void persist(List<Listing> listings) {
         int totalListings = listings.size();
         var savedListings = repository.saveAll(listings);
 
-        List<Listing> failedListings = listings.stream().filter(listing -> !savedListings.contains(listing)).toList();
+        List<Listing> failedListings = listings.stream()
+                .filter(listing -> !savedListings.contains(listing))
+                .toList();
         int totalFailedListings = failedListings.size();
         if (totalFailedListings > 0) {
             logger.error("{} out of {} objects failed to persist: {}", totalFailedListings, totalListings, failedListings);

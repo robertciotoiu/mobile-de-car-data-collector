@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>mobile-de-car-rabbitmq</artifactId>
+    <artifactId>mobile-de-rabbitmq</artifactId>
     <version>${mobilede.rabbitmq.version}</version>
 
     <properties>
@@ -31,8 +31,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework.amqp</groupId>
-            <artifactId>spring-rabbit</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>

@@ -13,9 +13,12 @@ public class ScraperService {
     @Autowired
     ListingsExtractor listingsExtractor;
 
+    @Autowired
+    ListingPersistor listingPersistor;
+
     public void scrapeAndIngestListings(String carSpecPageUrl) {
         var listings = listingsExtractor.extract(carSpecPageUrl);
-        ListingPersistor.persist(listings);
+        listingPersistor.persist(listings);
     }
 
     public void scrapeAndIngestListings(List<String> carSpecPageUrls) {

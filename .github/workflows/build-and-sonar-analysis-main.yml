@@ -39,7 +39,7 @@ jobs:
     - name: Start RabbitMQ
       uses: namoshek/rabbitmq-github-action@v1
       with:
-        version: '3.8.9'
+        version: '3.11.9'
         ports: '5672:5672'
         container-name: 'mobile-de-urls-integration-test'
 

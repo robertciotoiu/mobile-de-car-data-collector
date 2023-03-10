@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>com.robertciotoiu</groupId>
-            <artifactId>mobile-de-car-rabbitmq</artifactId>
+            <artifactId>mobile-de-rabbitmq</artifactId>
             <version>${mobilede.rabbitmq.version}</version>
         </dependency>
         <dependency>
