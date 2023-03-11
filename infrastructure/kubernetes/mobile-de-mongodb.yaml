@@ -24,13 +24,18 @@ spec:
               value: admin
             - name: MONGO_INITDB_DATABASE
               value: mobile-de-car-data
+            - name: LOCAL_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: mongodb-configmap
+                  key: localPath
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
       volumes:
         - name: mongodb-data
           hostPath:
-            path: /run/desktop/mnt/host/e/src/mobile-de-data
+            path: LOCAL_PATH
 ---
 apiVersion: v1
 kind: Service
