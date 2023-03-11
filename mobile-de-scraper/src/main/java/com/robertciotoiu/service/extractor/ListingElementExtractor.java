@@ -48,7 +48,7 @@ public class ListingElementExtractor {
 
     private String extractAndSetListingId(Element listingElement, Listing.ListingBuilder listingBuilder) {
         var listingId = listingElement.selectXpath(ListingXPath.LISTING_ID_XPATH).attr("data-listing-id");
-        if(listingId.equals("")){
+        if (listingId.equals("")) {
             logger.error("Failed to extract listingId! Listing element: {}", listingElement);
             throw new ListingIdNotFoundError("ListingId not found! Either a change in website structure, either a serious bug. Stopping program execution...");
         }
@@ -219,13 +219,17 @@ public class ListingElementExtractor {
             seller.sellerType(privateSellerType);
         } else {
             // Dealer
-            var dealerName = sellerElement.selectXpath("/div/div[1]/span[1]").text();
-            var dealerRatings = sellerElement.selectXpath("/div/div[1]/span[2]");
-            if (!dealerRatings.isEmpty()) {
-                var dealerRating = Double.parseDouble(dealerRatings.first().selectXpath("/span/div/span[1]").attr("data-rating"));
+            var dealerName = sellerElement.selectXpath(DEALER_NAME_XPATH).text();
+            var dealerRatingElements = sellerElement.selectXpath(DEALER_RATING_PARENT_XPATH);
+            if (!dealerRatingElements.isEmpty()) {
+                var dealerRating = Double.parseDouble(
+                        dealerRatingElements
+                                .first()
+                                .selectXpath(DEALER_RATING_XPATH)
+                                .attr("data-rating"));
                 seller.dealerRating(dealerRating);
 
-                var ratings = Integer.parseInt(dealerRatings.text().split(" ")[0]);
+                var ratings = Integer.parseInt(dealerRatingElements.text().split(" ")[0]);
                 seller.ratings(ratings);
             }
             seller.dealerName(dealerName);

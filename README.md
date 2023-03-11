@@ -1,5 +1,4 @@
-## **🚧 Work in progress. Feel free to contribute 🤝**
-
+# 📊⛏ Mobile.de Car Data Scraper
 [![CI Maven Build & Sonar](https://github.com/robertciotoiu/mobile-de-car-data-collector/actions/workflows/build-and-sonar-analysis-main.yml/badge.svg?branch=main)](https://github.com/robertciotoiu/mobile-de-car-data-collector/actions/workflows/build-and-sonar-analysis-main.yml)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper)
@@ -8,8 +7,6 @@
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper)
 
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=bugs)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper) [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=robertciotoiu_mobile-de-scraper&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=robertciotoiu_mobile-de-scraper)
-
-# 📊⛏ Mobile.de Car Data Scraper 
 
 Mobile.de Car Data Scraper is a responsible and ethical data scraping project that retrieves car listing data from [Mobile.de](https://www.mobile.de/). This project enforces delays between requests to avoid overloading the website's servers.
 
@@ -30,24 +27,31 @@ You will need to have the following software installed on your machine:
 - Java 19
 - Docker and Kubernetes (optional, only if you want to deploy the project in a containerized environment)
 
-### Installing
+### Running the application
 
 1. Clone the repository
 
-```git clone https://github.com/robertciotoiu/mobile-de-scraper.git```
+```shell
+git clone https://github.com/robertciotoiu/mobile-de-scraper.git
+```
+
+2. Set a valid [localPath](infrastructure/kubernetes/mobile-de-mongodb-configmap.yaml) to point to a location on your disk where the MongoDB will persist
+
 
 3. Navigate to the project directory
 
-```cd mobile.de-car-data-scraper```
+```shell
+cd mobile-de-car-data-collector/infrastructure
+```
 
-3. Build the project using Maven
+4. Build docker & push images and deploy all pods to a K8s namespace
 
-```mvn clean install```
+```shell
+./build-images-local.sh
+```
 
-4. Run the project
-
-```java -jar target/mobile.de-car-data-scraper.jar```
-
+Docker images will be built and pushed to the local docker image repository. Then it will create a namespace named "rc"(can be changed) and the K8s resources. 
+Each pod will automatically start to crawl, parse and save car data listings into a MongoDB that runs in its own pod but persists the data locally on the disk.
 
 ### Running the tests
 
