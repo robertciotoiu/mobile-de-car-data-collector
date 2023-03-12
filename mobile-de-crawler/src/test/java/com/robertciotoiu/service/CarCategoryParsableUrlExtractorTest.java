@@ -24,7 +24,7 @@ class CarCategoryParsableUrlExtractorTest {
 
         Assertions.assertNotNull(doc, "Check the input file!");
 
-        var links = carCategoryParsableUrlExtractor.sendParsableUrls("Dummy" ,doc);
+        var links = carCategoryParsableUrlExtractor.extractParsableUrls("Dummy" ,doc);
 
         Assertions.assertNotNull(links);
         Assertions.assertEquals(50, links.size());
@@ -37,7 +37,7 @@ class CarCategoryParsableUrlExtractorTest {
 
         Assertions.assertNotNull(doc, "Check the input file!");
 
-        var links = carCategoryParsableUrlExtractor.sendParsableUrls("Dummy" ,doc);
+        var links = carCategoryParsableUrlExtractor.extractParsableUrls("Dummy" ,doc);
 
         Assertions.assertNotNull(links);
         Assertions.assertEquals(1, links.size());
@@ -50,7 +50,7 @@ class CarCategoryParsableUrlExtractorTest {
 
         Assertions.assertNotNull(doc, "Check the input file!");
 
-        var links = carCategoryParsableUrlExtractor.sendParsableUrls("Dummy" ,doc);
+        var links = carCategoryParsableUrlExtractor.extractParsableUrls("Dummy" ,doc);
 
         Assertions.assertNotNull(links);
         Assertions.assertEquals(2, links.size());

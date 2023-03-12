@@ -1,7 +1,7 @@
 package com.robertciotoiu.service.extractor;
 
 import com.robertciotoiu.connection.JsoupWrapper;
-import com.robertciotoiu.data.model.listing.Listing;
+import com.robertciotoiu.data.model.Listing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;

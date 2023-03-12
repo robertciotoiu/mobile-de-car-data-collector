@@ -2,7 +2,7 @@ package com.robertciotoiu.service;
 
 import com.robertciotoiu.connection.JsoupWrapper;
 import com.robertciotoiu.exception.PaginationNotFoundError;
-import com.robertciotoiu.RabbitMQProducer;
+import com.robertciotoiu.operational.service.CategoryCooldownHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,13 +22,12 @@ public class CarCategoryParsableUrlExtractor {
     private static final Logger logger = LogManager.getLogger(CarCategoryParsableUrlExtractor.class);
     private static final String EN_LANGUAGE_PATH = "&lang=en";
     private static final String PAGINATION_CLASS_NAME = "pagination";
-
     @Autowired
     private Paginator paginator;
     @Autowired
     private JsoupWrapper jsoupWrapper;
     @Autowired
-    private RabbitMQProducer rabbitMQProducer;
+    CategoryCooldownHandler categoryCooldownHandler;
 
     /**
      * Extracts all URLs for the given CarSpecification URL.
@@ -39,17 +39,23 @@ public class CarCategoryParsableUrlExtractor {
      * @param firstPageUrl looks like: https://suchen.mobile.de/auto/mercedes-benz-clk-220.html?lang=en
      * @return all pages for this car category(between 1 and 50)
      */
-    public void sendParsableUrls(String firstPageUrl) {
+    public List<String> extractParsableUrls(String firstPageUrl) {
+        var isAnyCooldown = categoryCooldownHandler.hasCooldown(firstPageUrl);
+        if(isAnyCooldown)
+            return Collections.emptyList();
         try {
             var doc = jsoupWrapper.getHtml(firstPageUrl);
-            var pageUrls = sendParsableUrls(firstPageUrl, doc);
-            rabbitMQProducer.publishMessagesToRabbitMQ(pageUrls);
+            var parsableUrls = extractParsableUrls(firstPageUrl, doc);
+            categoryCooldownHandler.calculateAndSetCooldown(parsableUrls);
+            return parsableUrls;
         } catch (IOException e) {
             logger.warn("Cannot connect to this URL: {}. Exception: {}", firstPageUrl, e);
         }
+
+        return Collections.emptyList();
     }
 
-    public List<String> sendParsableUrls(String firstPageUrl, Document doc) {
+    public List<String> extractParsableUrls(String firstPageUrl, Document doc) {
         var urls = new ArrayList<String>();
         urls.add(firstPageUrl);
 
