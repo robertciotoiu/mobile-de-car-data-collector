@@ -1,6 +1,7 @@
-package com.robertciotoiu.service;
+package com.robertciotoiu;
 
 import com.rabbitmq.client.Channel;
+import com.robertciotoiu.service.ScraperService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -23,7 +24,7 @@ public class RabbitMQConsumer {
     public void handleMessage(String message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel) throws IOException {
         try {
             logger.info("Received message: {}", message);
-            scraperService.scrapeAndIngestListings(message);
+            scraperService.scrape(message);
         } catch (Exception e) {
             // handle any exceptions
             logger.error("Exception caught while processing message: {}", e.getMessage());

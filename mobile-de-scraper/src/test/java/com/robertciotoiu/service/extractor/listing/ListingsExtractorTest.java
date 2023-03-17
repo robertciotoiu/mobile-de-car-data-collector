@@ -1,7 +1,6 @@
-package com.robertciotoiu.service;
+package com.robertciotoiu.service.extractor.listing;
 
 import com.robertciotoiu.exception.ListingIdNotFoundError;
-import com.robertciotoiu.service.extractor.ListingsExtractor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;

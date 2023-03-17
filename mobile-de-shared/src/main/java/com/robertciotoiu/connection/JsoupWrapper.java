@@ -1,5 +1,6 @@
 package com.robertciotoiu.connection;
 
+import com.robertciotoiu.exception.CaptchaValidationError;
 import com.robertciotoiu.exception.MultithreadingNotAllowedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +35,7 @@ public class JsoupWrapper {
         Document doc;
         try {
             doc = Jsoup.connect(url).get();
+            detectValidation(doc);
             String time = Instant.now().toString();
             long seconds = random.nextInt(2000, 5000);
             logger.info("HTTP get request at address: {} at UTC time: {}. Awaiting {} seconds until the next request", url, time, seconds);
@@ -45,5 +47,12 @@ public class JsoupWrapper {
         }
 
         return doc;
+    }
+
+    private void detectValidation(Document carSpecPage) {
+        if(carSpecPage.html().contains("Challenge Validation")){
+            logger.error("Validation captcha required. Stopping the scraper...");
+            throw new CaptchaValidationError("Validation captcha required. Stopping the scraper...");
+        }
     }
 }
