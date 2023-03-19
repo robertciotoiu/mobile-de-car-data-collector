@@ -1,4 +1,4 @@
-package com.robertciotoiu.data.model.listing;
+package com.robertciotoiu.data.model;
 
 public enum VehicleType {
     CABRIO_ROADSTER,

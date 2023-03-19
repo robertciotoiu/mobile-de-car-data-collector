@@ -1,9 +1,9 @@
 package com.robertciotoiu.service.extractor;
 
-import com.robertciotoiu.data.model.listing.FuelGearboxHuDoors;
-import com.robertciotoiu.data.model.listing.TypeFuelGearboxHuDoors;
-import com.robertciotoiu.data.model.listing.TypeStatusFuelGearboxHuDoors;
-import com.robertciotoiu.data.model.listing.VehicleType;
+import com.robertciotoiu.data.model.FuelGearboxHuDoors;
+import com.robertciotoiu.data.model.TypeFuelGearboxHuDoors;
+import com.robertciotoiu.data.model.TypeStatusFuelGearboxHuDoors;
+import com.robertciotoiu.data.model.VehicleType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Element;

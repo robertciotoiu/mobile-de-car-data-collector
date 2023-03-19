@@ -26,3 +26,14 @@ spec:
               value: guest
             - name: SPRING_RABBITMQ_PASSWORD
               value: guest
+
+            - name: SPRING_DATA_MONGODB_HOST
+              value: mongodb-service
+            - name: SPRING_DATA_MONGODB_PORT
+              value: "27017"
+            - name: SPRING_DATA_MONGODB_USERNAME
+              value: admin
+            - name: SPRING_DATA_MONGODB_PASSWORD
+              value: admin
+            - name: SPRING_DATA_MONGODB_DATABASE
+              value: mobile-de-car-data

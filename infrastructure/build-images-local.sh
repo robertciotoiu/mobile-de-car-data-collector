@@ -22,6 +22,7 @@ kubectl delete namespace rc
 kubectl create namespace rc
 
 #TODO: find a better wait to orchestrate startup order & ready awaits
+kubectl -n rc apply -f mobile-de-mongodb-configmap.yaml
 kubectl -n rc apply -f mobile-de-mongodb.yaml
 sleep 10s
 kubectl -n rc apply -f mobile-de-rabbitmq.yaml

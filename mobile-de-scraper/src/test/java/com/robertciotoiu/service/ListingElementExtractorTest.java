@@ -1,6 +1,6 @@
 package com.robertciotoiu.service;
 
-import com.robertciotoiu.data.model.listing.*;
+import com.robertciotoiu.data.model.*;
 import com.robertciotoiu.service.extractor.ListingElementExtractor;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Assertions;

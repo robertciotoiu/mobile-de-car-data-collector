@@ -1,5 +1,6 @@
 package com.robertciotoiu.service;
 
+import com.robertciotoiu.RabbitMQProducer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +20,21 @@ public class CrawlerService {
     private CarCategoryBaseUrlExtractor carCategoryBaseUrlExtractor;
     @Autowired
     private CarCategoryParsableUrlExtractor carCategoryParsableUrlExtractor;
+    @Autowired
+    private RabbitMQProducer rabbitMQProducer;
 
-    @Scheduled(fixedDelayString = "${scheduler.fixed-delay}", timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedDelayString = "${scheduler.fixed-delay}", timeUnit = TimeUnit.MINUTES)
     private void crawl() {
         logger.info("Start new crawling");
-        var carCategoryBaseUrl = getCarCategoryBaseUrl();
-        extractParsableUrls(carCategoryBaseUrl);
+        var carCategoryBaseUrls = getCarCategoryBaseUrl();
+        extractAndPublishParsableUrls(carCategoryBaseUrls);
     }
 
-    private void extractParsableUrls(List<String> carCategoryBaseUrls) {
-        carCategoryBaseUrls.forEach(carCategoryParsableUrlExtractor::sendParsableUrls);
+    private void extractAndPublishParsableUrls(List<String> carCategoryBaseUrls) {
+        carCategoryBaseUrls.forEach(carCategoryBaseUrl -> {
+            var carCategoryParsableUrls = carCategoryParsableUrlExtractor.extractParsableUrls(carCategoryBaseUrl);
+            rabbitMQProducer.publishMessagesToRabbitMQ(carCategoryParsableUrls);
+        });
     }
 
     private List<String> getCarCategoryBaseUrl() {

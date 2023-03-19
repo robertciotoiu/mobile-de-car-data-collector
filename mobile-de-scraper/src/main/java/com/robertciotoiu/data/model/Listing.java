@@ -1,4 +1,4 @@
-package com.robertciotoiu.data.model.listing;
+package com.robertciotoiu.data.model;
 
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @Builder
-@Document(collation = "listings")
+@Document(collection = "listings")
 public class Listing {
     @Id
     private String listingId;
