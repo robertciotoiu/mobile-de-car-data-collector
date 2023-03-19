@@ -1,7 +1,6 @@
-package com.robertciotoiu.service;
+package com.robertciotoiu.service.extractor.listing;
 
 import com.robertciotoiu.data.model.*;
-import com.robertciotoiu.service.extractor.ListingElementExtractor;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,8 +17,6 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-//TODO assert all fields or entire objects
-//TODO repair tests
 @SpringBootTest
 class ListingElementExtractorTest {
     private static final String LISTING_XPATH = "/html/body/div";

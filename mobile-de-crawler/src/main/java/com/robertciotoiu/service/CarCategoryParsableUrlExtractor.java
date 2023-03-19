@@ -1,7 +1,6 @@
 package com.robertciotoiu.service;
 
 import com.robertciotoiu.connection.JsoupWrapper;
-import com.robertciotoiu.exception.PaginationNotFoundError;
 import com.robertciotoiu.operational.service.CategoryCooldownHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.robertciotoiu.PaginationHelper.getLastPageElement;
+import static com.robertciotoiu.PaginationHelper.isAnySubpage;
+
 /**
  * Chrome uses XPath 1.0 => is it safe to use Jsoup.Element.selectXpath as it also uses XPath 1.0.
  */
@@ -21,7 +23,7 @@ import java.util.List;
 public class CarCategoryParsableUrlExtractor {
     private static final Logger logger = LogManager.getLogger(CarCategoryParsableUrlExtractor.class);
     private static final String EN_LANGUAGE_PATH = "&lang=en";
-    private static final String PAGINATION_CLASS_NAME = "pagination";
+
     @Autowired
     private Paginator paginator;
     @Autowired
@@ -67,26 +69,8 @@ public class CarCategoryParsableUrlExtractor {
         return urls;
     }
 
-    private boolean isAnySubpage(Document doc) {
-        return !doc.getElementsByClass(PAGINATION_CLASS_NAME).isEmpty();
-    }
-
     private String extractLastPageUrl(Document doc) {
-        var paginationElement = doc
-                .getElementsByClass(PAGINATION_CLASS_NAME)
-                .first();
-
-        if(paginationElement == null){
-            logger.error("Failed to find pagination element! Check CarCategoryParsableUrlExtractor and update XPATHS! Document: {}", doc);
-            throw new PaginationNotFoundError("Failed to find pagination element! Check CarCategoryParsableUrlExtractor and update XPATHS! Stopping program execution...");
-        }
-
-        // Go to penultimate node, as the ultimate one is the next page button
-        var paginationSize = paginationElement.childNodeSize() - 2;
-        var lastUrlElement = paginationElement
-                .childNode(paginationSize)
-                .childNode(0);
-
+        var lastUrlElement = getLastPageElement(doc);
         return lastUrlElement.attr("data-href") + EN_LANGUAGE_PATH;
     }
 }

@@ -1,4 +1,4 @@
-package com.robertciotoiu.service.extractor;
+package com.robertciotoiu.service.extractor.listing;
 
 import com.robertciotoiu.connection.JsoupWrapper;
 import com.robertciotoiu.data.model.Listing;
@@ -31,6 +31,7 @@ public class ListingsExtractor {
 
         try {
             var carSpecPage = jsoupWrapper.getHtml(carSpecPageUrl);
+
             listings.addAll(extract(carSpecPage));
         } catch (IOException e) {
             logger.warn("Error accessing CarSpec URL to extract listings. URL: {}. Exception: {}", carSpecPageUrl, e);

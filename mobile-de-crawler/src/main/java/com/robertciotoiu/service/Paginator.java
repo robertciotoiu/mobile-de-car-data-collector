@@ -28,7 +28,7 @@ public class Paginator {
         return urls;
     }
 
-    public int extractPageNumber(String url) {
+    private int extractPageNumber(String url) {
         Pattern pattern = Pattern.compile(PAGE_NUMBER_REGEX);
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {

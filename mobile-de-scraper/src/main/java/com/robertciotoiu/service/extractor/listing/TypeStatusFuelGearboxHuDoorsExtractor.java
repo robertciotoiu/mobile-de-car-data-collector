@@ -1,4 +1,4 @@
-package com.robertciotoiu.service.extractor;
+package com.robertciotoiu.service.extractor.listing;
 
 import com.robertciotoiu.data.model.FuelGearboxHuDoors;
 import com.robertciotoiu.data.model.TypeFuelGearboxHuDoors;

@@ -1,4 +1,4 @@
-package com.robertciotoiu.service.extractor;
+package com.robertciotoiu.service.extractor.listing;
 
 public class ListingXPath {
     public static final String LISTING_ID_XPATH = "a";

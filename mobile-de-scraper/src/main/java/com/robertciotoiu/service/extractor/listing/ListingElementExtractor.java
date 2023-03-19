@@ -1,4 +1,4 @@
-package com.robertciotoiu.service.extractor;
+package com.robertciotoiu.service.extractor.listing;
 
 import com.robertciotoiu.data.model.*;
 import com.robertciotoiu.exception.ListingIdNotFoundError;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.robertciotoiu.service.extractor.ListingXPath.*;
+import static com.robertciotoiu.service.extractor.listing.ListingXPath.*;
 
 @Component
 public class ListingElementExtractor {
