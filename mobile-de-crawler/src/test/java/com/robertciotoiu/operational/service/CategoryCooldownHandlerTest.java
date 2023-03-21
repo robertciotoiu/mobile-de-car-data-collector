@@ -42,13 +42,12 @@ class CategoryCooldownHandlerTest {
     @Test
     void testCheckCooldown_notExpired() {
         String firstPageUrl = "https://example.com";
-        int cooldownMinutes = 60;
-        LocalDateTime crawlTime = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(30);
+        LocalDateTime crawlTime = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(25);
         CarCategoryCooldown carCategoryCooldown =
                 CarCategoryCooldown.builder()
                         .carCategoryUrl(firstPageUrl)
                         .crawlTime(crawlTime)
-                        .cooldownMinutes(cooldownMinutes)
+                        .cooldownMinutes(CategoryCooldownHandler.COOLDOWN_HOT_PAGES)
                         .build();
         when(repository.findById(firstPageUrl)).thenReturn(Optional.of(carCategoryCooldown));
 
@@ -60,13 +59,12 @@ class CategoryCooldownHandlerTest {
     @Test
     void testCheckCooldown_expired() {
         String firstPageUrl = "https://example.com";
-        int cooldownMinutes = 60;
-        LocalDateTime crawlTime = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(cooldownMinutes + 1);
+        LocalDateTime crawlTime = LocalDateTime.now(ZoneOffset.UTC).minusMinutes(CategoryCooldownHandler.COOLDOWN_HOT_PAGES + 1);
         CarCategoryCooldown carCategoryCooldown =
                 CarCategoryCooldown.builder()
                         .carCategoryUrl(firstPageUrl)
                         .crawlTime(crawlTime)
-                        .cooldownMinutes(cooldownMinutes)
+                        .cooldownMinutes(CategoryCooldownHandler.COOLDOWN_HOT_PAGES)
                         .build();
         when(repository.findById(firstPageUrl)).thenReturn(Optional.of(carCategoryCooldown));
 
@@ -78,7 +76,6 @@ class CategoryCooldownHandlerTest {
     @Test
     void testCalculateAndSetCooldown_lessThanMaxPages() {
         String firstPageUrl = "https://example.com";
-        int expectedCooldownMinutes = 60;
         when(repository.save(any())).thenReturn(null);
 
         handler.calculateAndSetCooldown(Collections.singletonList(firstPageUrl));
@@ -86,14 +83,13 @@ class CategoryCooldownHandlerTest {
         verify(repository).save(argThat(carCategoryCooldown ->
                 carCategoryCooldown.getCarCategoryUrl().equals(firstPageUrl) &&
                         carCategoryCooldown.getCrawlTime() != null &&
-                        carCategoryCooldown.getCooldownMinutes() == expectedCooldownMinutes));
+                        carCategoryCooldown.getCooldownMinutes() == CategoryCooldownHandler.COOLDOWN_HOT_PAGES));
         verifyNoMoreInteractions(repository);
     }
 
     @Test
     void testCalculateAndSetCooldown_maxPages() {
         String firstPageUrl = "https://example.com";
-        int expectedCooldownMinutes = 720;
         when(repository.save(any())).thenReturn(null);
 
         handler.calculateAndSetCooldown(Collections.nCopies(50 + 1, firstPageUrl));
@@ -101,7 +97,7 @@ class CategoryCooldownHandlerTest {
         verify(repository).save(argThat(carCategoryCooldown ->
                 carCategoryCooldown.getCarCategoryUrl().equals(firstPageUrl) &&
                         carCategoryCooldown.getCrawlTime() != null &&
-                        carCategoryCooldown.getCooldownMinutes() == expectedCooldownMinutes));
+                        carCategoryCooldown.getCooldownMinutes() == CategoryCooldownHandler.COOLDOWN_COLD_PAGES));
         verifyNoMoreInteractions(repository);
     }
 }
