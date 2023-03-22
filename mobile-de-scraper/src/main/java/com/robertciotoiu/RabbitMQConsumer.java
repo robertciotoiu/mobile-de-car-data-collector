@@ -1,6 +1,7 @@
 package com.robertciotoiu;
 
 import com.rabbitmq.client.Channel;
+import com.robertciotoiu.exception.ListingExtractionException;
 import com.robertciotoiu.service.ScraperService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +31,7 @@ public class RabbitMQConsumer {
             logger.error("Exception caught while processing message: {}", e.getMessage());
             // reject and requeue the message
             channel.basicReject(deliveryTag, true);
+            throw new ListingExtractionException("Stopping program execution... Check and solve the parsing exception.");
         } finally {
             // Acknowledge the message to remove it from the queue
             channel.basicAck(deliveryTag, false);

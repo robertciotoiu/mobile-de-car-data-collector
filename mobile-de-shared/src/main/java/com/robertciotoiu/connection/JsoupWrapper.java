@@ -37,7 +37,7 @@ public class JsoupWrapper {
             doc = Jsoup.connect(url).get();
             detectValidation(doc);
             String time = Instant.now().toString();
-            long seconds = random.nextInt(2000, 5000);
+            long seconds = random.nextInt(1000, 2000);
             logger.info("HTTP get request at address: {} at UTC time: {}. Awaiting {} seconds until the next request", url, time, seconds);
             Thread.sleep(seconds);
         } catch (InterruptedException e) {

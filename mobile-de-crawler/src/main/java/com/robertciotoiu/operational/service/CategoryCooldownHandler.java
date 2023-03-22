@@ -17,12 +17,15 @@ public class CategoryCooldownHandler {
     private static final Logger logger = LogManager.getLogger(CategoryCooldownHandler.class);
     @Autowired
     private CarCategoryCooldownRepository repository;
-    private static final int MAX_PAGES = 50;
+    public static final int MAX_PAGES = 50;
+    public static final int COOLDOWN_HOT_PAGES = 30;
+    public static final int COOLDOWN_COLD_PAGES = 720;
+
 
     /**
      * Check if there is a cooldown or if it elapsed
      * @param firstPageUrl
-     * @return
+     * @return true if cooldown is still active, false otherwise
      */
     public boolean hasCooldown(String firstPageUrl) {
         var carCategoryCooldownOptional = repository.findById(firstPageUrl);
@@ -53,11 +56,11 @@ public class CategoryCooldownHandler {
                 .carCategoryUrl(parsableUrls.get(0))
                 .crawlTime(LocalDateTime.now(ZoneOffset.UTC));
         if(parsableUrls.size() >= MAX_PAGES){
-            carCategoryCooldownBuilder.cooldownMinutes(720);
-            logger.info("Set 720 minutes cooldown for URL: {}", parsableUrls.get(0));
+            carCategoryCooldownBuilder.cooldownMinutes(COOLDOWN_COLD_PAGES);
+            logger.info("Set {} minutes cooldown for URL: {}", COOLDOWN_COLD_PAGES, parsableUrls.get(0));
         } else {
-            carCategoryCooldownBuilder.cooldownMinutes(60);
-            logger.info("Set 60 minutes cooldown for URL: {}", parsableUrls.get(0));
+            carCategoryCooldownBuilder.cooldownMinutes(COOLDOWN_HOT_PAGES);
+            logger.info("Set {} minutes cooldown for URL: {}",COOLDOWN_HOT_PAGES, parsableUrls.get(0));
         }
         repository.save(carCategoryCooldownBuilder.build());
     }

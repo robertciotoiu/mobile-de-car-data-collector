@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class PriceData {
-    private int price;
+    private Integer price;
     private String priceRating;
 }

@@ -8,7 +8,7 @@ import lombok.Data;
 public class TypeStatusFuelGearboxHuDoors {
     /**
      * Can contain the following information:
-     * Damage status: "Damaged"; "Accident-free"; "Repaired accident damage"
+     * Vehicle Condition: "Damaged"; "Accident-free"; "Repaired accident damage"
      * Availability: "Availability: In 2 Weeks after order"
      * This is usually between vehicle type and fuel type in <br> tags
      */

@@ -15,7 +15,6 @@ import java.util.HashMap;
 @Component
 public class TypeStatusFuelGearboxHuDoorsExtractor {
     private static final Logger logger = LogManager.getLogger(TypeStatusFuelGearboxHuDoorsExtractor.class);
-
     private static final String VEHICLE_TYPE = "vehicleType";
     private static final String FUEL_TYPE = "fuelType";
     private static final String GEARBOX_TYPE = "gearboxType";
@@ -39,17 +38,17 @@ public class TypeStatusFuelGearboxHuDoorsExtractor {
 
         TypeFuelGearboxHuDoors typeFuelGearboxHuDoors;
         String vehicleCondition = "";
+        var typeFuelGearboxHuDoorsRaw = typeStatusFuelGearboxHuDoorsElement.text();
 
         if (typeStatusFuelGearboxHuDoorsElement.childNodeSize() == 3) {
-            var typeFuelGearboxHuDoorsRaw = typeStatusFuelGearboxHuDoorsElement.text();
             vehicleCondition = extractVehicleCondition(typeStatusFuelGearboxHuDoorsElement, listingId);
             typeFuelGearboxHuDoors = extractTypeFuelGearboxHuDoors(typeFuelGearboxHuDoorsRaw);
         } else if (typeStatusFuelGearboxHuDoorsElement.childNodeSize() == 1) {
-            var fuelGearboxHuDoorsRaw = typeStatusFuelGearboxHuDoorsElement.text();
-            typeFuelGearboxHuDoors = extractTypeFuelGearboxHuDoors(fuelGearboxHuDoorsRaw);
+            typeFuelGearboxHuDoors = extractTypeFuelGearboxHuDoors(typeFuelGearboxHuDoorsRaw);
         } else {
-            logger.warn("Found element that has a different structure from the coded options. Element: {}", typeStatusFuelGearboxHuDoorsElement);
-            typeFuelGearboxHuDoors = TypeFuelGearboxHuDoors.builder().build();
+            //too many combinations to handle. Save it for a later smart processing microservice.
+            logger.warn("Found element that has a different structure from the coded options. Storing whole text for later processing. Listing: {} Element: {}", listingId, typeStatusFuelGearboxHuDoorsElement);
+            typeFuelGearboxHuDoors = TypeFuelGearboxHuDoors.builder().rawTBPString(typeFuelGearboxHuDoorsRaw).build();
         }
 
         return TypeStatusFuelGearboxHuDoors.builder()
@@ -129,6 +128,7 @@ public class TypeStatusFuelGearboxHuDoorsExtractor {
         stringToCarFeature.put("automatic", GEARBOX_TYPE);
         stringToCarFeature.put("semi-automatic", GEARBOX_TYPE);
         stringToCarFeature.put("hu \\d{2}/\\d{4}", VEHICLE_HU);
+        stringToCarFeature.put("new", VEHICLE_HU);
         stringToCarFeature.put("\\d/\\d doors", DOORS_NUMBER);
         return stringToCarFeature;
     }

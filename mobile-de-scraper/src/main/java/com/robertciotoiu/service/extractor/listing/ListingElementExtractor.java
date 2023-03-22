@@ -5,6 +5,7 @@ import com.robertciotoiu.exception.ListingIdNotFoundError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.robertciotoiu.service.extractor.listing.ListingXPath.*;
 
@@ -66,7 +69,7 @@ public class ListingElementExtractor {
         extractAndSetPostedDate(listingElement, listingId, listingBuilder);
         extractAndSetRegMilPow(listingElement, listingId, listingBuilder);
         extractAndSetTypeStatusFuelGearboxHuDoors(listingElement, listingId, listingBuilder);
-        extractAndSetVehicleData(listingElement, listingId, listingBuilder);
+        extractAndSetConsumptionEmissionsData(listingElement, listingId, listingBuilder);
         extractAndSetVehicleExtras(listingElement, listingId, listingBuilder);
         extractAndSetSeller(listingElement, listingId, listingBuilder);
         extractAndSetPrice(listingElement, listingId, listingBuilder);
@@ -102,7 +105,7 @@ public class ListingElementExtractor {
 
     private void extractAndSetImgUrl(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
-            var imgUrl = listingElement.selectXpath(IMG_URL_XPATH).attr("src");
+            var imgUrl = listingElement.selectXpath(IMG_URL_XPATH).attr("data-src");
             listingBuilder.imgUrl(imgUrl);
         } catch (Exception e) {
             logger.warn("Failed to extract imgUrl for listing: {}", listingId);
@@ -123,16 +126,27 @@ public class ListingElementExtractor {
             var postedDate = listingElement.selectXpath(POSTED_DATE_XPATH).text();
             listingBuilder.postedDate(getPostedDateTime(postedDate));
         } catch (Exception e) {
-            logger.warn("Failed to extract postedDate for listing: {}", listingId);
+            logger.warn("Failed to extract postedDate for listing: {}. Retry using the 2nd option.", listingId);
+            extractAndSetPostedDate2ndOption(listingElement, listingId, listingBuilder);
+        }
+    }
+
+    private void extractAndSetPostedDate2ndOption(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+        try {
+            var postedDate = listingElement.selectXpath(POSTED_DATE_2ND_XPATH).text();
+            var extractedDate = extractDate(postedDate);
+            var postedDateTime = getPostedDateTime(extractedDate);
+            listingBuilder.postedDate(postedDateTime);
+        } catch (Exception e) {
+            logger.warn("Failed to extract postedDate for listing: {} using the 2nd option.", listingId);
         }
     }
 
     private void extractAndSetRegMilPow(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
             var regMilPow = listingElement.selectXpath(REG_MIL_POW_XPATH).text();
-            listingBuilder.regMilPow(extractRegMilPow(regMilPow));
+            listingBuilder.regMilPow(extractRegMilPow(regMilPow, listingId));
         } catch (Exception e) {
-            //TODO make sure inside the method there is a logging for every failed field
             logger.warn("Failed to extract regMilPow for listing: {}", listingId);
         }
     }
@@ -142,19 +156,69 @@ public class ListingElementExtractor {
             var typeStatusFuelGearboxHuDoors = listingElement.selectXpath(TYPE_FUEL_GEARBOX_HU_DOORS_XPATH);
             listingBuilder.typeStatusFuelGearboxHuDoors(typeStatusFuelGearboxHuDoorsExtractor.extractTypeStatusFuelGearboxHuDoors(typeStatusFuelGearboxHuDoors, listingId));
         } catch (Exception e) {
-            //TODO make sure inside the method there is a logging for every failed field
             logger.warn("Failed to extract typeStatusFuelGearboxHuDoors for listing: {}", listingId);
         }
     }
 
-    private void extractAndSetVehicleData(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+    private void extractAndSetConsumptionEmissionsData(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
-            var vehicleDataString = listingElement.selectXpath(CONSUMPTION_EMISSIONS_XPATH).text();
-            listingBuilder.consumptionEmissions(extractConsumptionEmissions(vehicleDataString));
+            var consumptionEmissionsElements = listingElement.selectXpath(CONSUMPTION_EMISSIONS_XPATH);
+            listingBuilder.consumptionEmissions(extractConsumptionEmissions(consumptionEmissionsElements));
         } catch (Exception e) {
-            //TODO make sure inside the method there is a logging for every failed field
-            logger.warn("Failed to extract vehicleDataString for listing: {}", listingId);
+            extractAndSetConsumptionEmissionsData2ndOption(listingElement, listingId, listingBuilder);
         }
+    }
+
+    private ConsumptionEmissions extractConsumptionEmissions(Elements consumptionEmissionsElements) {
+        var consumptionEmissionElement = consumptionEmissionsElements.last();
+        var consumptionEmissionsString = ((TextNode) consumptionEmissionElement.childNode(consumptionEmissionElement.childNodeSize() - 1)).text();
+        var sanitizedConsumptionEmissionString = consumptionEmissionsString.replaceAll(",(?=\\d)", ".");
+        var consumptionEmissionsArray = sanitizedConsumptionEmissionString.split(",");
+        var consumption = consumptionEmissionsArray[0].trim();
+        var emissions = consumptionEmissionsArray[1].trim();
+
+        return ConsumptionEmissions.builder().consumption(consumption).emissions(emissions).build();
+    }
+
+    private void extractAndSetConsumptionEmissionsData2ndOption(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+        try {
+            var consumptionEmissionsString = listingElement.selectXpath(CONSUMPTION_EMISSIONS_XPATH).text();
+            var consumptionEmissions = extractConsumptionEmissions2ndOption(consumptionEmissionsString);
+            listingBuilder.consumptionEmissions(consumptionEmissions);
+
+            if (consumptionEmissions.getConsumption() == null || consumptionEmissions.getConsumption().equals("")) {
+                logger.warn("Failed to extract consumption for listing: {} using 2nd option.", listingId);
+            }
+
+            if (consumptionEmissions.getEmissions() == null || consumptionEmissions.getEmissions().equals("")) {
+                logger.warn("Failed to extract emissions for listing: {} using 2nd option.", listingId);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to extract consumptionEmissions for listing: {} using 2nd option. Exception: ", listingId, e);
+        }
+    }
+
+    private ConsumptionEmissions extractConsumptionEmissions2ndOption(String consumptionEmissionsString) {
+        var consumptionEmissionsBuilder = ConsumptionEmissions.builder();
+        String consumptionRegex = "\\d+\\.\\d+\\s+l/100km\\s+\\(comb\\.\\)\\*?";
+        Pattern consumptionPattern = Pattern.compile(consumptionRegex);
+        Matcher consumptionMatcher = consumptionPattern.matcher(consumptionEmissionsString);
+
+        if (consumptionMatcher.find()) {
+            var consumption = consumptionMatcher.group();
+            consumptionEmissionsBuilder.consumption(consumption);
+        }
+
+        String emissionsRegex = "\\d+\u2009g CO₂/km\\s+\\(comb\\.\\)\\*?";
+        Pattern emissionsPattern = Pattern.compile(emissionsRegex);
+        Matcher emissionMatcher = emissionsPattern.matcher(consumptionEmissionsString);
+
+        if (emissionMatcher.find()) {
+            var emissions = emissionMatcher.group();
+            consumptionEmissionsBuilder.emissions(emissions);
+        }
+
+        return consumptionEmissionsBuilder.build();
     }
 
     private void extractAndSetVehicleExtras(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
@@ -164,39 +228,48 @@ public class ListingElementExtractor {
             var vehicleExtras3 = listingElement.selectXpath(VEHICLE_EXTRAS_3_XPATH);
             listingBuilder.vehicleExtras(extractAndSetVehicleExtras(vehicleExtras1, vehicleExtras2, vehicleExtras3));
         } catch (Exception e) {
-            //TODO make sure inside the method there is a logging for every failed field
             logger.warn("Failed to extract vehicleExtras for listing: {}", listingId);
         }
     }
 
     private void extractAndSetSeller(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         try {
-
             var seller = listingElement.selectXpath(SELLER_XPATH);
-            listingBuilder.seller(extractAndSetSeller(seller));
+            listingBuilder.seller(extractAndSetSeller(seller, listingId));
         } catch (Exception e) {
-            //TODO make sure inside the method there is a logging for every failed field
             logger.warn("Failed to extract seller for listing: {}", listingId);
         }
     }
 
     private void extractAndSetPrice(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
-        try {
-            var price = listingElement.selectXpath(PRICE_XPATH);
-            var priceRating = listingElement.selectXpath(PRICE_RATING_XPATH);
-            listingBuilder.priceData(PriceData.builder()
-                    .price(Integer.parseInt(price.text().replace("€", "").replace(",", "")))
-                    .priceRating(priceRating.text())
-                    .build()
-            );
-        } catch (Exception e) {
-            //TODO make sure inside the method there is a logging for every failed field
-            logger.warn("Failed to extract priceData for listing: {}", listingId);
-        }
+        var price = listingElement.selectXpath(PRICE_XPATH);
+        var priceRating = listingElement.selectXpath(PRICE_RATING_XPATH);
+        listingBuilder.priceData(PriceData.builder()
+                .price(getPrice(price, listingId))
+                .priceRating(getPriceRating(priceRating, listingId))
+                .build()
+        );
     }
 
-    // TODO: wrap as many important operations as possible with clear indicative logs(usefull for debugging)
-    private Seller extractAndSetSeller(Elements sellerElements) {
+    private static Integer getPrice(Elements price, String listingId) {
+        try {
+            return Integer.parseInt(price.text().replace("€", "").replace(",", ""));
+        } catch (Exception e) {
+            logger.warn("Failed to extract priceData for listing: {}", listingId);
+        }
+        return null;
+    }
+
+    private static String getPriceRating(Elements priceRating, String listingId) {
+        try {
+            return priceRating.text();
+        } catch (Exception e) {
+            logger.warn("Failed to extract priceRating for listing: {}", listingId);
+        }
+        return null;
+    }
+
+    private Seller extractAndSetSeller(Elements sellerElements, String listingId) {
         Element sellerElement;
 
         try {
@@ -209,39 +282,120 @@ public class ListingElementExtractor {
         if (sellerElement == null)
             return Seller.builder().build();
 
-        var seller = Seller.builder();
+        Seller seller;
         if (sellerElement.childNodeSize() == 1) {
-            // Private seller
-            var locationSellerTypeArray = sellerElement.text().split(",");
-            var privateSellerLocation = locationSellerTypeArray[0].trim();
-            var privateSellerType = locationSellerTypeArray[1].trim();
-            seller.location(privateSellerLocation);
-            seller.sellerType(privateSellerType);
+            // Seller
+            seller = extractPrivateSeller(sellerElement, listingId);
         } else {
             // Dealer
-            var dealerName = sellerElement.selectXpath(DEALER_NAME_XPATH).text();
-            var dealerRatingElements = sellerElement.selectXpath(DEALER_RATING_PARENT_XPATH);
-            if (!dealerRatingElements.isEmpty()) {
+            seller = extractDealer(sellerElement, listingId);
+        }
+
+        return seller;
+    }
+
+    private static Seller extractPrivateSeller(Element sellerElement, String listingId) {
+        var sellerBuilder = Seller.builder();
+        String[] locationSellerTypeArray;
+
+        try {
+            locationSellerTypeArray = sellerElement.text().split(",");
+        } catch (Exception e) {
+            logger.warn("Failed to extract private seller locationSellerTypeArray for listing: {}", listingId);
+            return null;
+        }
+
+        try {
+            var privateSellerLocation = locationSellerTypeArray[0].trim();
+            sellerBuilder.location(privateSellerLocation);
+        } catch (Exception e) {
+            logger.warn("Failed to extract privateSellerLocation for listing: {}", listingId);
+        }
+
+        try {
+            var privateSellerType = locationSellerTypeArray[1].trim();
+            sellerBuilder.sellerType(privateSellerType);
+        } catch (Exception e) {
+            logger.warn("Failed to extract privateSellerType for listing: {}", listingId);
+        }
+        return sellerBuilder.build();
+    }
+
+    private static Seller extractDealer(Element sellerElement, String listingId) {
+        Seller dealer;
+        if (hasLogoElement(sellerElement)) {
+            dealer = extractDealer(sellerElement, listingId, DEALER_WITH_LOGO_NAME_XPATH, DEALER_WITH_LOGO_RATING_PARENT_XPATH, DEALER_WITH_LOGO_RATING_XPATH);
+        } else {
+            dealer = extractDealer(sellerElement, listingId, DEALER_NAME_XPATH, DEALER_RATING_PARENT_XPATH, DEALER_RATING_XPATH);
+        }
+        return dealer;
+    }
+
+    private static Seller extractDealer(Element sellerElement, String listingId, String dealerNameXpath, String dealerRatingParentXpath, String dealerRatingXpath) {
+        var dealerBuilder = Seller.builder();
+
+        try {
+            var dealerName = sellerElement.selectXpath(dealerNameXpath).text();
+            dealerBuilder.dealerName(dealerName);
+        } catch (Exception e) {
+            logger.warn("Failed to extract dealerName for listing: {}", listingId);
+        }
+        extractDealerRating(sellerElement, listingId, dealerRatingParentXpath, dealerRatingXpath, dealerBuilder);
+
+        try {
+            var dealerLocationTypeArray = sellerElement.lastElementChild().text().split(",");
+            extractAndSetDealerLocation(listingId, dealerBuilder, dealerLocationTypeArray);
+            extractAndSetDealerType(listingId, dealerBuilder, dealerLocationTypeArray);
+        } catch (Exception e) {
+            logger.warn("Failed to extract dealerLocationTypeArray for listing: {}", listingId);
+        }
+
+        return dealerBuilder.build();
+    }
+
+    private static void extractAndSetDealerType(String listingId, Seller.SellerBuilder dealerBuilder, String[] dealerLocationTypeArray) {
+        try {
+            var dealerType = dealerLocationTypeArray[1].trim();
+            dealerBuilder.sellerType(dealerType);
+        } catch (Exception e) {
+            logger.warn("Failed to extract sellerType for listing: {}", listingId);
+        }
+    }
+
+    private static void extractAndSetDealerLocation(String listingId, Seller.SellerBuilder dealerBuilder, String[] dealerLocationTypeArray) {
+        try {
+            var dealerLocation = dealerLocationTypeArray[0].trim();
+            dealerBuilder.location(dealerLocation);
+        } catch (Exception e) {
+            logger.warn("Failed to extract dealerLocation for listing: {}", listingId);
+        }
+    }
+
+    private static void extractDealerRating(Element sellerElement, String listingId, String dealerRatingParentXpath, String dealerRatingXpath, Seller.SellerBuilder dealerBuilder) {
+        var dealerRatingElements = sellerElement.selectXpath(dealerRatingParentXpath);
+        if (!dealerRatingElements.isEmpty()) {
+            try {
                 var dealerRating = Double.parseDouble(
                         dealerRatingElements
                                 .first()
-                                .selectXpath(DEALER_RATING_XPATH)
+                                .selectXpath(dealerRatingXpath)
                                 .attr("data-rating"));
-                seller.dealerRating(dealerRating);
-
-                var ratings = Integer.parseInt(dealerRatingElements.text().split(" ")[0]);
-                seller.ratings(ratings);
+                dealerBuilder.dealerRating(dealerRating);
+            } catch (Exception e) {
+                logger.warn("Failed to extract dealerRating for listing: {}", listingId);
             }
-            seller.dealerName(dealerName);
 
-            var dealerLocationTypeArray = sellerElement.child(1).text().split(",");
-            var dealerLocation = dealerLocationTypeArray[0].trim();
-            var dealerType = dealerLocationTypeArray[1].trim();
-            seller.location(dealerLocation)
-                    .sellerType(dealerType);
+            try {
+                var ratings = Integer.parseInt(dealerRatingElements.text().split(" ")[0]);
+                dealerBuilder.ratings(ratings);
+            } catch (Exception e) {
+                logger.warn("Failed to extract ratings for listing: {}", listingId);
+            }
         }
+    }
 
-        return seller.build();
+    private static boolean hasLogoElement(Element sellerElement) {
+        return !sellerElement.selectXpath("//div[contains(@class,'image-block-dealerLogo')]").html().equals("");
     }
 
     private List<String> extractAndSetVehicleExtras(Elements vehicleExtras1, Elements vehicleExtras2, Elements vehicleExtras3) {
@@ -257,53 +411,79 @@ public class ListingElementExtractor {
         return vehicleExtras;
     }
 
-    private ConsumptionEmissions extractConsumptionEmissions(String vehicleDataString) {
-        var consumptionEmissions = vehicleDataString.substring(vehicleDataString.indexOf("ca."));
-        var consumptionEmissionsArray = consumptionEmissions.split("\\),");
-        var consumption = consumptionEmissionsArray[0].trim() + ")";
-        var emissions = consumptionEmissionsArray[1].trim();
-
-        return ConsumptionEmissions.builder().consumption(consumption).emissions(emissions).build();
-    }
-
-    private RegMilPow extractRegMilPow(String regMilPowString) {
-        var regMilPowArray = regMilPowString.split(",");
+    private RegMilPow extractRegMilPow(String regMilPowString, String listingId) {
+        var removedThousandSeparator = regMilPowString.replaceAll(",(?=\\d)", "");
+        var regMilPowArray = removedThousandSeparator.split(",");
 
         return RegMilPow.builder()
-                .registrationDate(getRegistrationDate(regMilPowArray[0]))
-                .mileage(getMileage(regMilPowArray[1]))
-                .kw(getKw(regMilPowArray[2]))
-                .hp(getHp(regMilPowArray[2]))
+                .registrationDate(getRegistrationDate(regMilPowArray[0], listingId))
+                .mileage(getMileage(regMilPowArray[1], listingId))
+                .kw(getKw(regMilPowArray[2], listingId))
+                .hp(getHp(regMilPowArray[2], listingId))
                 .build();
     }
 
-    private int getHp(String regMilPow) {
-        return Integer.parseInt(regMilPow
-                .substring(regMilPow.indexOf("(") + 1, regMilPow.indexOf(" ", regMilPow.indexOf("(")))
-                .trim());
+    private Integer getHp(String regMilPow, String listingId) {
+        try {
+            return Integer.parseInt(regMilPow
+                    .substring(regMilPow.indexOf("(") + 1, regMilPow.indexOf(" ", regMilPow.indexOf("(")))
+                    .trim());
+        } catch (Exception e) {
+            logger.warn("Failed to extract hp for listing: {}", listingId);
+            return null;
+        }
     }
 
-    private int getKw(String regMilPow) {
-        return Integer.parseInt(regMilPow
-                .substring(0, regMilPow.indexOf(" ", 1))
-                .trim());
+    private Integer getKw(String regMilPow, String listingId) {
+        try {
+            return Integer.parseInt(regMilPow
+                    .substring(0, regMilPow.indexOf(" ", 1))
+                    .trim());
+        } catch (Exception e) {
+            logger.warn("Failed to extract kw for listing: {}", listingId);
+            return null;
+        }
     }
 
-    private int getMileage(String regMilPow) {
-        String mileageString = regMilPow
-                .substring(0, regMilPow.lastIndexOf(" "))
-                .replace(".", "")
-                .trim();
-        return Integer.parseInt(mileageString);
+    private Integer getMileage(String regMilPow, String listingId) {
+        try {
+            String mileageString = regMilPow
+                    .substring(0, regMilPow.lastIndexOf(" "))
+                    .replace(".", "")
+                    .trim();
+            return Integer.parseInt(mileageString);
+        } catch (Exception e) {
+            logger.warn("Failed to extract mileage for listing: {}", listingId);
+            return null;
+        }
+    }
+
+    public String extractDate(String input) {
+        Pattern pattern = Pattern.compile("Ad online since (.+? [AP]M)");
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return "";
+        }
     }
 
     public LocalDateTime getPostedDateTime(String postedDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy, h:mm a");
-        return LocalDateTime.parse(postedDate.substring(postedDate.indexOf("since") + 6).trim(), formatter);
+        var formatter = DateTimeFormatter.ofPattern("MMM d, yyyy, h:mm a");
+        var postedDateTimeString = postedDate.substring(postedDate.indexOf("since") + 6).trim();
+        return LocalDateTime.parse(postedDateTimeString, formatter);
     }
 
-    public YearMonth getRegistrationDate(String registrationDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
-        return YearMonth.parse(registrationDate.substring(registrationDate.indexOf("FR") + 3).trim(), formatter);
+    public String getRegistrationDate(String registrationDate, String listingId) {
+        try {
+            if (registrationDate.equals("New car"))
+                return YearMonth.now().toString();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+            return YearMonth.parse(registrationDate.substring(registrationDate.indexOf("FR") + 3).trim(), formatter).toString();
+        } catch (Exception e) {
+            logger.warn("Failed to extract registration date for listing: {}", listingId);
+            return null;
+        }
     }
 }

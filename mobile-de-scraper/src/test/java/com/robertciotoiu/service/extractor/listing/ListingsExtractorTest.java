@@ -4,6 +4,7 @@ import com.robertciotoiu.exception.ListingIdNotFoundError;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,5 +35,17 @@ class ListingsExtractorTest {
         Document doc = Jsoup.parse(in, null);
 
         Assertions.assertThrows(ListingIdNotFoundError.class, () -> listingsExtractor.extract(doc));
+    }
+
+
+    @Test
+    @Disabled("Used only for manual review of extracted listings")
+    void testListingExtraction() throws IOException {
+        File in = new File("src/test/resources/listings-03202023.html");
+        var doc = Jsoup.parse(in, null);
+
+        var listings = listingsExtractor.extract(doc);
+
+        listings.forEach(System.out::println);
     }
 }
