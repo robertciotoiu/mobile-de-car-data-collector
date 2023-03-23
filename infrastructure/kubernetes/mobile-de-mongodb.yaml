@@ -35,7 +35,7 @@ spec:
       volumes:
         - name: mongodb-data
           hostPath:
-            path: LOCAL_PATH
+            path: /run/desktop/mnt/host/e/data/mobile-de-data/mongodb
 ---
 apiVersion: v1
 kind: Service
