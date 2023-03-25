@@ -4,11 +4,6 @@ helm repo update
 # Cleanup
 helm uninstall loki --namespace=loki
 kubectl delete namespace loki
-
-# TODO: remove if not needed
-#kubectl delete psp loki -n loki
-#kubectl delete clusterrole loki-grafana-clusterrole
-#kubectl delete clusterrole loki-promtail
 kubectl delete -n loki pvc loki-pvc
 kubectl delete -n loki pv loki-pv
 
@@ -22,6 +17,8 @@ helm upgrade --install loki --namespace=loki -f kubernetes/loki-values.yaml graf
 
 # Get grafana admin password
 kubectl get secret --namespace loki loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-sleep 10s
+#TODO: replace all "sleep 10s" with this:
+kubectl wait --for=condition=ready --timeout=120s -n loki pod -l app=loki
+
 # Port-forward to make grafana accessible
-kubectl port-forward --namespace loki service/loki-grafana 3000:80
+#kubectl port-forward --namespace loki service/loki-grafana 3000:80

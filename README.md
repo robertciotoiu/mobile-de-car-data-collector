@@ -47,7 +47,7 @@ cd mobile-de-car-data-collector/infrastructure
 4. Build docker & push images and deploy all pods to a K8s namespace
 
 ```shell
-./build-images-local.sh
+./deploy.sh
 ```
 
 Docker images will be built and pushed to the local docker image repository. Then it will create a namespace named "rc"(can be changed) and the K8s resources. 
