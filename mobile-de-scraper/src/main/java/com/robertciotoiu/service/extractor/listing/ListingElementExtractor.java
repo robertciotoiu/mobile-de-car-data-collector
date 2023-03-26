@@ -187,14 +187,14 @@ public class ListingElementExtractor {
             listingBuilder.consumptionEmissions(consumptionEmissions);
 
             if (consumptionEmissions.getConsumption() == null || consumptionEmissions.getConsumption().equals("")) {
-                logger.warn("Failed to extract consumption for listing: {} using 2nd option.", listingId);
+                logger.info("Failed to extract consumption for listing: {} using 2nd option.", listingId);
             }
 
             if (consumptionEmissions.getEmissions() == null || consumptionEmissions.getEmissions().equals("")) {
-                logger.warn("Failed to extract emissions for listing: {} using 2nd option.", listingId);
+                logger.info("Failed to extract emissions for listing: {} using 2nd option.", listingId);
             }
         } catch (Exception e) {
-            logger.warn("Failed to extract consumptionEmissions for listing: {} using 2nd option. Exception: ", listingId, e);
+            logger.info("Failed to extract consumptionEmissions for listing: {} using 2nd option. Exception: ", listingId, e);
         }
     }
 
