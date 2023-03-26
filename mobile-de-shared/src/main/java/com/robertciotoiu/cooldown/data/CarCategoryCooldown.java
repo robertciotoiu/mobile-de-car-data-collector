@@ -1,4 +1,4 @@
-package com.robertciotoiu.operational.data;
+package com.robertciotoiu.cooldown.data;
 
 import lombok.Builder;
 import lombok.Data;

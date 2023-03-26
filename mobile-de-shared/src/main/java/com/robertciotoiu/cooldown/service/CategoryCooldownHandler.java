@@ -1,7 +1,7 @@
-package com.robertciotoiu.operational.service;
+package com.robertciotoiu.cooldown.service;
 
-import com.robertciotoiu.operational.data.CarCategoryCooldown;
-import com.robertciotoiu.operational.data.CarCategoryCooldownRepository;
+import com.robertciotoiu.cooldown.data.CarCategoryCooldown;
+import com.robertciotoiu.cooldown.data.CarCategoryCooldownRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +56,11 @@ public class CategoryCooldownHandler {
                 .carCategoryUrl(parsableUrls.get(0))
                 .crawlTime(LocalDateTime.now(ZoneOffset.UTC));
         if(parsableUrls.size() >= MAX_PAGES){
-            carCategoryCooldownBuilder.cooldownMinutes(COOLDOWN_COLD_PAGES);
-            logger.info("Set {} minutes cooldown for URL: {}", COOLDOWN_COLD_PAGES, parsableUrls.get(0));
-        } else {
             carCategoryCooldownBuilder.cooldownMinutes(COOLDOWN_HOT_PAGES);
-            logger.info("Set {} minutes cooldown for URL: {}",COOLDOWN_HOT_PAGES, parsableUrls.get(0));
+            logger.info("Set {} minutes cooldown for URL: {}", COOLDOWN_HOT_PAGES, parsableUrls.get(0));
+        } else {
+            carCategoryCooldownBuilder.cooldownMinutes(COOLDOWN_COLD_PAGES);
+            logger.info("Set {} minutes cooldown for URL: {}",COOLDOWN_COLD_PAGES, parsableUrls.get(0));
         }
         repository.save(carCategoryCooldownBuilder.build());
     }

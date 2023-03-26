@@ -1,5 +1,6 @@
 package com.robertciotoiu.service;
 
+import com.robertciotoiu.CarCategoryParsableUrlExtractor;
 import com.robertciotoiu.RabbitMQProducer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

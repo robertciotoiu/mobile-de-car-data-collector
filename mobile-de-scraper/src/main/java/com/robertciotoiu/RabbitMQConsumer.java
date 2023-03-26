@@ -17,7 +17,6 @@ import java.io.IOException;
 @Component
 public class RabbitMQConsumer {
     private static final Logger logger = LogManager.getLogger(RabbitMQConsumer.class);
-
     @Autowired
     ScraperService scraperService;
 
@@ -26,7 +25,8 @@ public class RabbitMQConsumer {
         try {
             logger.info("Received message: {}", message);
             scraperService.scrape(message);
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             // handle any exceptions
             logger.error("Exception caught while processing message: {}", e.getMessage());
             // reject and requeue the message

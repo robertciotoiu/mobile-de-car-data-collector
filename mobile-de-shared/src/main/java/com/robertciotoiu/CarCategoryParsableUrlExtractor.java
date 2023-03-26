@@ -1,7 +1,7 @@
-package com.robertciotoiu.service;
+package com.robertciotoiu;
 
 import com.robertciotoiu.connection.JsoupWrapper;
-import com.robertciotoiu.operational.service.CategoryCooldownHandler;
+import com.robertciotoiu.cooldown.service.CategoryCooldownHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Document;

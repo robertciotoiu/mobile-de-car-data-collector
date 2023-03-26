@@ -1,5 +1,6 @@
 package com.robertciotoiu.service;
 
+import com.robertciotoiu.CarCategoryParsableUrlExtractor;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
