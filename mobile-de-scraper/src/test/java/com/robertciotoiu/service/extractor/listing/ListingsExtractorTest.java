@@ -37,6 +37,19 @@ class ListingsExtractorTest {
         Assertions.assertThrows(ListingIdNotFoundError.class, () -> listingsExtractor.extract(doc, "https://suchen.mobile.de/auto/mercedes-benz-clk-220.html?lang=en"));
     }
 
+    @Test
+    @Disabled
+    void testExtractRegMilPow() throws IOException {
+        File in = new File("src/test/resources/special-listings/regMilPow-few-fields.html");
+        var doc = Jsoup.parse(in, null);
+
+        var listings = listingsExtractor.extract(doc, "https://suchen.mobile.de/auto/mercedes-benz-clk-220.html?lang=en");
+        var extractedMileage = listings.stream().filter(listing -> listing.getListingId().equals("363980464")).findFirst().get().getRegMilPow().getMileage();
+        var extractedRegistrationDate = listings.stream().filter(listing -> listing.getListingId().equals("363980464")).findFirst().get().getRegMilPow().getRegistrationDate();
+
+        Assertions.assertEquals(999999, extractedMileage);
+        Assertions.assertEquals("1979-05", extractedRegistrationDate);
+    }
 
     @Test
     @Disabled("Used only for manual review of extracted listings")

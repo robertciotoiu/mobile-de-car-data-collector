@@ -186,11 +186,11 @@ public class ListingElementExtractor {
             listingBuilder.consumptionEmissions(consumptionEmissions);
 
             if (consumptionEmissions.getConsumption() == null || consumptionEmissions.getConsumption().equals("")) {
-                logger.info("Failed to extract consumption for listing: {} using 2nd option.", listingId);
+                logger.debug("Failed to extract consumption for listing: {} using 2nd option.", listingId);
             }
 
             if (consumptionEmissions.getEmissions() == null || consumptionEmissions.getEmissions().equals("")) {
-                logger.info("Failed to extract emissions for listing: {} using 2nd option.", listingId);
+                logger.debug("Failed to extract emissions for listing: {} using 2nd option.", listingId);
             }
         } catch (Exception e) {
             logger.info("Failed to extract consumptionEmissions for listing: {} using 2nd option. Exception: ", listingId, e);
@@ -411,15 +411,36 @@ public class ListingElementExtractor {
     }
 
     private RegMilPow extractRegMilPow(String regMilPowString, String listingId) {
+        var regMilPowBuilder = RegMilPow.builder();
+
         var removedThousandSeparator = regMilPowString.replaceAll(",(?=\\d)", "");
         var regMilPowArray = removedThousandSeparator.split(",");
 
-        return RegMilPow.builder()
-                .registrationDate(getRegistrationDate(regMilPowArray[0], listingId))
-                .mileage(getMileage(regMilPowArray[1], listingId))
-                .kw(getKw(regMilPowArray[2], listingId))
-                .hp(getHp(regMilPowArray[2], listingId))
-                .build();
+        try{
+            regMilPowBuilder.registrationDate(getRegistrationDate(regMilPowArray[0], listingId));
+        } catch (Exception e){
+            logger.warn("Failed to extract registrationDate for listing: {}", listingId);
+        }
+
+        try{
+            regMilPowBuilder.mileage(getMileage(regMilPowArray[1], listingId));
+        } catch (Exception e){
+            logger.warn("Failed to extract mileage for listing: {}", listingId);
+        }
+
+        try{
+            regMilPowBuilder.kw(getKw(regMilPowArray[2], listingId));
+        } catch (Exception e){
+            logger.warn("Failed to extract kw for listing: {}", listingId);
+        }
+
+        try{
+            regMilPowBuilder.hp(getHp(regMilPowArray[2], listingId));
+        } catch (Exception e){
+            logger.warn("Failed to extract hp for listing: {}", listingId);
+        }
+
+        return regMilPowBuilder.build();
     }
 
     private Integer getHp(String regMilPow, String listingId) {
