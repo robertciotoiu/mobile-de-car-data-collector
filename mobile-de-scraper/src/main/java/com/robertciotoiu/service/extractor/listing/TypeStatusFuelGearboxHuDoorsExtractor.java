@@ -46,9 +46,15 @@ public class TypeStatusFuelGearboxHuDoorsExtractor {
         } else if (typeStatusFuelGearboxHuDoorsElement.childNodeSize() == 1) {
             typeFuelGearboxHuDoors = extractTypeFuelGearboxHuDoors(typeFuelGearboxHuDoorsRaw);
         } else {
-            //too many combinations to handle. Save it for a later smart processing microservice.
+            // Too many combinations to handle. Save it for a later smart processing microservice.
             logger.warn("Found element that has a different structure from the coded options. Storing whole text for later processing. Listing: {} Element: {}", listingId, typeStatusFuelGearboxHuDoorsElement);
             typeFuelGearboxHuDoors = TypeFuelGearboxHuDoors.builder().rawTBPString(typeFuelGearboxHuDoorsRaw).build();
+        }
+
+        // If important specs are missing, try to save the entire description for later post-processing
+        if(typeFuelGearboxHuDoors.getRawTBPString() == null && (typeFuelGearboxHuDoors.getFuelGearboxHuDoors().getFuelType() == null || typeFuelGearboxHuDoors.getFuelGearboxHuDoors().getGearboxType() == null)){
+            typeFuelGearboxHuDoors.setRawTBPString(typeFuelGearboxHuDoorsRaw);
+            logger.warn("Fuel type or gearbox type is missing for listingsId: {}. Saving raw string for later post-processing", listingId);
         }
 
         return TypeStatusFuelGearboxHuDoors.builder()
