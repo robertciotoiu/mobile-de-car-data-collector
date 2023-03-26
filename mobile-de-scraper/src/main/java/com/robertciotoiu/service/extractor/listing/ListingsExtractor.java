@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +34,7 @@ public class ListingsExtractor {
         try {
             var carSpecPage = jsoupWrapper.getHtml(carSpecPageUrl);
 
-            listings.addAll(extract(carSpecPage));
+            listings.addAll(extract(carSpecPage, carSpecPageUrl));
         } catch (IOException e) {
             logger.warn("Error accessing CarSpec URL to extract listings. URL: {}. Exception: {}", carSpecPageUrl, e);
         }
@@ -40,12 +42,12 @@ public class ListingsExtractor {
         return listings;
     }
 
-    public List<Listing> extract(Document carSpecPage) {
+    public List<Listing> extract(Document carSpecPage, String carSpecPageUrl) {
         var listings = new ArrayList<Listing>();
 
-        var normalListings = extractListings(carSpecPage, LISTING_CLASS_NAME_XPATH);
-        var topListings = extractListings(carSpecPage, TOP_LISTING_CLASS_NAME);
-        var adListings = extractListings(carSpecPage, AD_LISTING_CLASS_NAME);
+        var normalListings = extractListings(carSpecPage, carSpecPageUrl, LISTING_CLASS_NAME_XPATH);
+        var topListings = extractListings(carSpecPage, carSpecPageUrl, TOP_LISTING_CLASS_NAME);
+        var adListings = extractListings(carSpecPage, carSpecPageUrl, AD_LISTING_CLASS_NAME);
 
         listings.addAll(normalListings);
         listings.addAll(topListings);
@@ -54,16 +56,25 @@ public class ListingsExtractor {
         return listings;
     }
 
-    private List<Listing> extractListings(Document carSpecPage, String xpath) {
+    private List<Listing> extractListings(Document carSpecPage, String carSpecPageUrl, String xpath) {
         var listings = new ArrayList<Listing>();
         var listingsElements = carSpecPage.selectXpath(xpath);
+        var carCategory = extractCarCategory(carSpecPageUrl);
 
         for (var listingElement : listingsElements) {
             var listing = extractListing(listingElement);
+            listing.setCategory(carCategory);
+            listing.setScrapeTime(LocalDateTime.now(ZoneOffset.UTC));
             listings.add(listing);
         }
 
         return listings;
+    }
+
+    private String extractCarCategory(String carSpecPageUrl) {
+        var beginIndex = carSpecPageUrl.lastIndexOf("/" ) + 1;
+        var endIndex = carSpecPageUrl.indexOf(".html?");
+        return carSpecPageUrl.substring(beginIndex, endIndex);
     }
 
     private Listing extractListing(Element listingElement) {

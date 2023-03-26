@@ -23,7 +23,7 @@ class ListingsExtractorTest {
         File in = new File("src/test/resources/listings-with-multiple-ads.html");
         Document doc = Jsoup.parse(in, null);
 
-        var listings = listingsExtractor.extract(doc);
+        var listings = listingsExtractor.extract(doc, "https://suchen.mobile.de/auto/mercedes-benz-clk-220.html?lang=en");
 
         Assertions.assertNotNull(listings);
         Assertions.assertEquals(21, listings.size());
@@ -34,7 +34,7 @@ class ListingsExtractorTest {
         File in = new File("src/test/resources/listings-missing-listingId.html");
         Document doc = Jsoup.parse(in, null);
 
-        Assertions.assertThrows(ListingIdNotFoundError.class, () -> listingsExtractor.extract(doc));
+        Assertions.assertThrows(ListingIdNotFoundError.class, () -> listingsExtractor.extract(doc, "https://suchen.mobile.de/auto/mercedes-benz-clk-220.html?lang=en"));
     }
 
 
@@ -44,7 +44,7 @@ class ListingsExtractorTest {
         File in = new File("src/test/resources/listings-03202023.html");
         var doc = Jsoup.parse(in, null);
 
-        var listings = listingsExtractor.extract(doc);
+        var listings = listingsExtractor.extract(doc, "https://suchen.mobile.de/auto/mercedes-benz-clk-220.html?lang=en");
 
         listings.forEach(System.out::println);
     }

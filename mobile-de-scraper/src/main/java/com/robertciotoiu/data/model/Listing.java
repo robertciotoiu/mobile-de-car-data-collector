@@ -15,6 +15,8 @@ public class Listing {
     @Id
     private String listingId;
     private String title;
+    private String category;
+    private LocalDateTime scrapeTime;
     private String url;
     private String imgUrl;
     private boolean isNew;

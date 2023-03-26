@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -400,7 +399,7 @@ public class ListingElementExtractor {
 
     private List<String> extractAndSetVehicleExtras(Elements vehicleExtras1, Elements vehicleExtras2, Elements vehicleExtras3) {
         if (vehicleExtras1.isEmpty())
-            return Collections.emptyList();
+            return null;
 
         var vehicleExtras = new ArrayList<String>();
 
@@ -476,14 +475,14 @@ public class ListingElementExtractor {
 
     public String getRegistrationDate(String registrationDate, String listingId) {
         try {
-            if (registrationDate.equals("New car"))
+            if (registrationDate.equals("New car") || registrationDate.equals("Pre-Registration"))
                 return YearMonth.now().toString();
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
             return YearMonth.parse(registrationDate.substring(registrationDate.indexOf("FR") + 3).trim(), formatter).toString();
         } catch (Exception e) {
-            logger.warn("Failed to extract registration date for listing: {}", listingId);
-            return null;
+            logger.warn("Failed to extract registration date for listing: {}. Saving registration date string found: {}", listingId, registrationDate);
+            return registrationDate;
         }
     }
 }
