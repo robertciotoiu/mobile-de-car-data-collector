@@ -1,20 +1,19 @@
-package com.robertciotoiu.operational.service;
+package com.robertciotoiu.service;
 
-import com.robertciotoiu.operational.data.CarCategoryCooldown;
-import com.robertciotoiu.operational.data.CarCategoryCooldownRepository;
+import com.robertciotoiu.cooldown.data.CarCategoryCooldown;
+import com.robertciotoiu.cooldown.data.CarCategoryCooldownRepository;
+import com.robertciotoiu.cooldown.service.CategoryCooldownHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CategoryCooldownHandlerTest {
 
@@ -32,11 +31,11 @@ class CategoryCooldownHandlerTest {
     @Test
     void testCheckCooldown_notFound() {
         String firstPageUrl = "https://example.com";
-        when(repository.findById(firstPageUrl)).thenReturn(Optional.empty());
+        Mockito.when(repository.findById(firstPageUrl)).thenReturn(Optional.empty());
 
         assertFalse(handler.hasCooldown(firstPageUrl));
-        verify(repository).findById(firstPageUrl);
-        verifyNoMoreInteractions(repository);
+        Mockito.verify(repository).findById(firstPageUrl);
+        Mockito.verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -49,11 +48,11 @@ class CategoryCooldownHandlerTest {
                         .crawlTime(crawlTime)
                         .cooldownMinutes(CategoryCooldownHandler.COOLDOWN_HOT_PAGES)
                         .build();
-        when(repository.findById(firstPageUrl)).thenReturn(Optional.of(carCategoryCooldown));
+        Mockito.when(repository.findById(firstPageUrl)).thenReturn(Optional.of(carCategoryCooldown));
 
         assertTrue(handler.hasCooldown(firstPageUrl));
-        verify(repository).findById(firstPageUrl);
-        verifyNoMoreInteractions(repository);
+        Mockito.verify(repository).findById(firstPageUrl);
+        Mockito.verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -66,38 +65,38 @@ class CategoryCooldownHandlerTest {
                         .crawlTime(crawlTime)
                         .cooldownMinutes(CategoryCooldownHandler.COOLDOWN_HOT_PAGES)
                         .build();
-        when(repository.findById(firstPageUrl)).thenReturn(Optional.of(carCategoryCooldown));
+        Mockito.when(repository.findById(firstPageUrl)).thenReturn(Optional.of(carCategoryCooldown));
 
         assertFalse(handler.hasCooldown(firstPageUrl));
-        verify(repository).findById(firstPageUrl);
-        verifyNoMoreInteractions(repository);
+        Mockito.verify(repository).findById(firstPageUrl);
+        Mockito.verifyNoMoreInteractions(repository);
     }
 
     @Test
     void testCalculateAndSetCooldown_lessThanMaxPages() {
         String firstPageUrl = "https://example.com";
-        when(repository.save(any())).thenReturn(null);
+        Mockito.when(repository.save(ArgumentMatchers.any())).thenReturn(null);
 
         handler.calculateAndSetCooldown(Collections.singletonList(firstPageUrl));
 
-        verify(repository).save(argThat(carCategoryCooldown ->
+        Mockito.verify(repository).save(ArgumentMatchers.argThat(carCategoryCooldown ->
                 carCategoryCooldown.getCarCategoryUrl().equals(firstPageUrl) &&
                         carCategoryCooldown.getCrawlTime() != null &&
-                        carCategoryCooldown.getCooldownMinutes() == CategoryCooldownHandler.COOLDOWN_HOT_PAGES));
-        verifyNoMoreInteractions(repository);
+                        carCategoryCooldown.getCooldownMinutes() == CategoryCooldownHandler.COOLDOWN_COLD_PAGES));
+        Mockito.verifyNoMoreInteractions(repository);
     }
 
     @Test
     void testCalculateAndSetCooldown_maxPages() {
         String firstPageUrl = "https://example.com";
-        when(repository.save(any())).thenReturn(null);
+        Mockito.when(repository.save(ArgumentMatchers.any())).thenReturn(null);
 
         handler.calculateAndSetCooldown(Collections.nCopies(50 + 1, firstPageUrl));
 
-        verify(repository).save(argThat(carCategoryCooldown ->
+        Mockito.verify(repository).save(ArgumentMatchers.argThat(carCategoryCooldown ->
                 carCategoryCooldown.getCarCategoryUrl().equals(firstPageUrl) &&
                         carCategoryCooldown.getCrawlTime() != null &&
-                        carCategoryCooldown.getCooldownMinutes() == CategoryCooldownHandler.COOLDOWN_COLD_PAGES));
-        verifyNoMoreInteractions(repository);
+                        carCategoryCooldown.getCooldownMinutes() == CategoryCooldownHandler.COOLDOWN_HOT_PAGES));
+        Mockito.verifyNoMoreInteractions(repository);
     }
 }

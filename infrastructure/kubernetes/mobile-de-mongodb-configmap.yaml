@@ -4,4 +4,4 @@ metadata:
   name: mongodb-configmap
 data:
   # property-like keys; each key maps to a simple value
-  localPath: "/run/desktop/mnt/host/e/src/mobile-de-data"
+  localPath: "/run/desktop/mnt/host/e/data/mobile-de-data/mongodb"

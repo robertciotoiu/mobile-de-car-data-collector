@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -76,7 +75,6 @@ class ListingElementExtractorTest {
                         .emissions("ca. 130 g CO₂/km (comb.)")
                         .build()
                 )
-                .vehicleExtras(Collections.emptyList())
                 .seller(
                         Seller.builder()
                                 .sellerType("Dealer")
@@ -92,11 +90,11 @@ class ListingElementExtractorTest {
                                 .priceRating("Good price")
                                 .build()
                 )
-
                 .build();
 
-
         var listing = listingElementExtractor.extract(doc);
+
+        expectedListing.setScrapeTime(listing.getScrapeTime());
 
         Assertions.assertEquals("Volkswagen Caddy PKW Alltrack AHK+DSG+Xenon+Navi+Kamera", listing.getTitle());
         Assertions.assertEquals(expectedListing, listing);

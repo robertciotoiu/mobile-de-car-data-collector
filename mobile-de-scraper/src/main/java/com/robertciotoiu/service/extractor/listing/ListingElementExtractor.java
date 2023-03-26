@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -187,14 +186,14 @@ public class ListingElementExtractor {
             listingBuilder.consumptionEmissions(consumptionEmissions);
 
             if (consumptionEmissions.getConsumption() == null || consumptionEmissions.getConsumption().equals("")) {
-                logger.warn("Failed to extract consumption for listing: {} using 2nd option.", listingId);
+                logger.debug("Failed to extract consumption for listing: {} using 2nd option.", listingId);
             }
 
             if (consumptionEmissions.getEmissions() == null || consumptionEmissions.getEmissions().equals("")) {
-                logger.warn("Failed to extract emissions for listing: {} using 2nd option.", listingId);
+                logger.debug("Failed to extract emissions for listing: {} using 2nd option.", listingId);
             }
         } catch (Exception e) {
-            logger.warn("Failed to extract consumptionEmissions for listing: {} using 2nd option. Exception: ", listingId, e);
+            logger.info("Failed to extract consumptionEmissions for listing: {} using 2nd option. Exception: ", listingId, e);
         }
     }
 
@@ -400,7 +399,7 @@ public class ListingElementExtractor {
 
     private List<String> extractAndSetVehicleExtras(Elements vehicleExtras1, Elements vehicleExtras2, Elements vehicleExtras3) {
         if (vehicleExtras1.isEmpty())
-            return Collections.emptyList();
+            return null;
 
         var vehicleExtras = new ArrayList<String>();
 
@@ -412,15 +411,36 @@ public class ListingElementExtractor {
     }
 
     private RegMilPow extractRegMilPow(String regMilPowString, String listingId) {
+        var regMilPowBuilder = RegMilPow.builder();
+
         var removedThousandSeparator = regMilPowString.replaceAll(",(?=\\d)", "");
         var regMilPowArray = removedThousandSeparator.split(",");
 
-        return RegMilPow.builder()
-                .registrationDate(getRegistrationDate(regMilPowArray[0], listingId))
-                .mileage(getMileage(regMilPowArray[1], listingId))
-                .kw(getKw(regMilPowArray[2], listingId))
-                .hp(getHp(regMilPowArray[2], listingId))
-                .build();
+        try{
+            regMilPowBuilder.registrationDate(getRegistrationDate(regMilPowArray[0], listingId));
+        } catch (Exception e){
+            logger.warn("Failed to extract registrationDate for listing: {}", listingId);
+        }
+
+        try{
+            regMilPowBuilder.mileage(getMileage(regMilPowArray[1], listingId));
+        } catch (Exception e){
+            logger.warn("Failed to extract mileage for listing: {}", listingId);
+        }
+
+        try{
+            regMilPowBuilder.kw(getKw(regMilPowArray[2], listingId));
+        } catch (Exception e){
+            logger.warn("Failed to extract kw for listing: {}", listingId);
+        }
+
+        try{
+            regMilPowBuilder.hp(getHp(regMilPowArray[2], listingId));
+        } catch (Exception e){
+            logger.warn("Failed to extract hp for listing: {}", listingId);
+        }
+
+        return regMilPowBuilder.build();
     }
 
     private Integer getHp(String regMilPow, String listingId) {
@@ -476,14 +496,14 @@ public class ListingElementExtractor {
 
     public String getRegistrationDate(String registrationDate, String listingId) {
         try {
-            if (registrationDate.equals("New car"))
+            if (registrationDate.equals("New car") || registrationDate.equals("Pre-Registration"))
                 return YearMonth.now().toString();
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
             return YearMonth.parse(registrationDate.substring(registrationDate.indexOf("FR") + 3).trim(), formatter).toString();
         } catch (Exception e) {
-            logger.warn("Failed to extract registration date for listing: {}", listingId);
-            return null;
+            logger.warn("Failed to extract registration date for listing: {}. Saving registration date string found: {}", listingId, registrationDate);
+            return registrationDate;
         }
     }
 }

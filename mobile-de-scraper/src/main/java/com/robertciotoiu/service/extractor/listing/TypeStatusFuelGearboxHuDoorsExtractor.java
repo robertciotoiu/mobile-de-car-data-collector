@@ -37,7 +37,7 @@ public class TypeStatusFuelGearboxHuDoorsExtractor {
         }
 
         TypeFuelGearboxHuDoors typeFuelGearboxHuDoors;
-        String vehicleCondition = "";
+        String vehicleCondition = null;
         var typeFuelGearboxHuDoorsRaw = typeStatusFuelGearboxHuDoorsElement.text();
 
         if (typeStatusFuelGearboxHuDoorsElement.childNodeSize() == 3) {
@@ -58,7 +58,7 @@ public class TypeStatusFuelGearboxHuDoorsExtractor {
     }
 
     private String extractVehicleCondition(Element typeStatusFuelGearboxHuDoorsElement, String listingId) {
-        String vehicleCondition = "";
+        String vehicleCondition = null;
         try {
             vehicleCondition = ((Element) typeStatusFuelGearboxHuDoorsElement.childNode(1)).text();
         } catch (Exception e) {

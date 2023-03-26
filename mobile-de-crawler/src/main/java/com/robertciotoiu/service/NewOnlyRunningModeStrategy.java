@@ -14,8 +14,6 @@ public class NewOnlyRunningModeStrategy implements RunningModeStrategy {
     @Autowired
     private CarCategoryBaseUrlExtractor carCategoryBaseUrlExtractor;
     @Autowired
-    private CarCategoryParsableUrlExtractor carCategoryParsableUrlExtractor;
-    @Autowired
     private RabbitMQProducer rabbitMQProducer;
     @Override
     public void execute(String url) {

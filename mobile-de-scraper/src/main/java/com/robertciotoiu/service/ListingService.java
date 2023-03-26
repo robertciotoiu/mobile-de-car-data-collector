@@ -2,10 +2,9 @@ package com.robertciotoiu.service;
 
 import com.robertciotoiu.data.ListingPersistor;
 import com.robertciotoiu.service.extractor.listing.ListingsExtractor;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ListingService {
@@ -15,14 +14,8 @@ public class ListingService {
     @Autowired
     ListingPersistor listingPersistor;
 
-    public void scrapeAndIngestListings(String carSpecPageUrl) {
-        var listings = listingsExtractor.extract(carSpecPageUrl);
+    public void scrapeAndIngestListings(Document carSpecPage, String carSpecPageUrl) {
+        var listings = listingsExtractor.extract(carSpecPage, carSpecPageUrl);
         listingPersistor.persist(listings);
-    }
-
-    public void scrapeAndIngestListings(List<String> carSpecPageUrls) {
-        for (var carSpecPageUrl : carSpecPageUrls) {
-            scrapeAndIngestListings(carSpecPageUrl);
-        }
     }
 }
