@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -125,7 +124,6 @@ public class ListingElementExtractor {
             var postedDate = listingElement.selectXpath(POSTED_DATE_XPATH).text();
             listingBuilder.postedDate(getPostedDateTime(postedDate));
         } catch (Exception e) {
-            logger.warn("Failed to extract postedDate for listing: {}. Retry using the 2nd option.", listingId);
             extractAndSetPostedDate2ndOption(listingElement, listingId, listingBuilder);
         }
     }
@@ -137,7 +135,33 @@ public class ListingElementExtractor {
             var postedDateTime = getPostedDateTime(extractedDate);
             listingBuilder.postedDate(postedDateTime);
         } catch (Exception e) {
-            logger.warn("Failed to extract postedDate for listing: {} using the 2nd option.", listingId);
+            extractAndSetPostedDateGermanPage(listingElement, listingId, listingBuilder);
+        }
+    }
+
+    private void extractAndSetPostedDateGermanPage(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder){
+        try {
+            var postedDate = listingElement.selectXpath(POSTED_DATE_2ND_XPATH).text();
+            listingBuilder.postedDate(extractGermanPageDateTime(postedDate));
+        } catch (Exception e) {
+            extractAndSetPostedDateFromAds(listingElement, listingId, listingBuilder);
+        }
+    }
+
+    public static LocalDateTime extractGermanPageDateTime(String input) {
+        String dateTimeString = input.substring(input.indexOf("seit ") + 5);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm", Locale.ENGLISH);
+        return LocalDateTime.parse(dateTimeString, formatter);
+    }
+
+    private void extractAndSetPostedDateFromAds(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
+        try {
+            var postedDate = listingElement.selectXpath(POSTED_DATE_ADS_XPATH).text();
+            var extractedDate = extractDate(postedDate);
+            var postedDateTime = getPostedDateTime(extractedDate);
+            listingBuilder.postedDate(postedDateTime);
+        } catch (Exception e) {
+            logger.warn("Failed to extract postedDate for listing: {} using the 3th option(Ads). Element: {}", listingId, listingElement);
         }
     }
 
@@ -243,29 +267,42 @@ public class ListingElementExtractor {
     private void extractAndSetPrice(Element listingElement, String listingId, Listing.ListingBuilder listingBuilder) {
         var price = listingElement.selectXpath(PRICE_XPATH);
         var priceRating = listingElement.selectXpath(PRICE_RATING_XPATH);
-        listingBuilder.priceData(PriceData.builder()
-                .price(getPrice(price, listingId))
-                .priceRating(getPriceRating(priceRating, listingId))
-                .build()
-        );
+        var priceDataBuilder = PriceData.builder();
+        setPrice(price, listingId, priceDataBuilder);
+        setPriceRating(priceRating, listingId, priceDataBuilder);
+        listingBuilder.priceData(priceDataBuilder.build());
     }
 
-    private static Integer getPrice(Elements price, String listingId) {
+    private static void setPrice(Elements price, String listingId, PriceData.PriceDataBuilder listingBuilder) {
         try {
-            return Integer.parseInt(price.text().replace("€", "").replace(",", ""));
+            listingBuilder.price(Integer.parseInt(price.text().replace("€", "").replace(",", "")));
         } catch (Exception e) {
-            logger.warn("Failed to extract priceData for listing: {}", listingId);
+            logger.debug("Failed to extract price for listing: {}. Price element: {}", listingId, price);
+            setPriceHandlePointAndNBSP(price, listingId, listingBuilder);
         }
-        return null;
     }
 
-    private static String getPriceRating(Elements priceRating, String listingId) {
+    private static void setPriceHandlePointAndNBSP(Elements price, String listingId, PriceData.PriceDataBuilder listingBuilder) {
         try {
-            return priceRating.text();
+            listingBuilder.price(extractPrice(price.text()));
+        } catch (Exception e) {
+            logger.warn("Failed to extract price for listing: {} using setPriceHandlePointAndNBSP.", listingId);
+            listingBuilder.rawPrice(price.text());
+        }
+    }
+
+    public static Integer extractPrice(String stringPrice) {
+        String numberString = stringPrice.replaceAll("[^\\d,]", "") // remove all non-digit and non-comma characters
+                .replace(",", "."); // replace comma with decimal point
+        return Integer.parseInt(numberString);
+    }
+
+    private static void setPriceRating(Elements priceRating, String listingId, PriceData.PriceDataBuilder listingBuilder) {
+        try {
+            listingBuilder.priceRating(priceRating.text());
         } catch (Exception e) {
             logger.warn("Failed to extract priceRating for listing: {}", listingId);
         }
-        return null;
     }
 
     private Seller extractAndSetSeller(Elements sellerElements, String listingId) {
@@ -399,7 +436,7 @@ public class ListingElementExtractor {
 
     private List<String> extractAndSetVehicleExtras(Elements vehicleExtras1, Elements vehicleExtras2, Elements vehicleExtras3) {
         if (vehicleExtras1.isEmpty())
-            return null;
+            return Collections.emptyList();
 
         var vehicleExtras = new ArrayList<String>();
 
@@ -416,27 +453,27 @@ public class ListingElementExtractor {
         var removedThousandSeparator = regMilPowString.replaceAll(",(?=\\d)", "");
         var regMilPowArray = removedThousandSeparator.split(",");
 
-        try{
+        try {
             regMilPowBuilder.registrationDate(getRegistrationDate(regMilPowArray[0], listingId));
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.warn("Failed to extract registrationDate for listing: {}", listingId);
         }
 
-        try{
+        try {
             regMilPowBuilder.mileage(getMileage(regMilPowArray[1], listingId));
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.warn("Failed to extract mileage for listing: {}", listingId);
         }
 
-        try{
+        try {
             regMilPowBuilder.kw(getKw(regMilPowArray[2], listingId));
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.warn("Failed to extract kw for listing: {}", listingId);
         }
 
-        try{
+        try {
             regMilPowBuilder.hp(getHp(regMilPowArray[2], listingId));
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.warn("Failed to extract hp for listing: {}", listingId);
         }
 

@@ -8,4 +8,5 @@ import lombok.Data;
 public class PriceData {
     private Integer price;
     private String priceRating;
+    private String rawPrice;
 }

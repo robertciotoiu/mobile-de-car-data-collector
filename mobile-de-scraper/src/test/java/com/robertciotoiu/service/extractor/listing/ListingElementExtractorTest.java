@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -49,6 +50,7 @@ class ListingElementExtractorTest {
                 .isNew(false)
                 .isElectric(false)
                 .postedDate(LocalDateTime.of(2023, 1, 8, 8, 22))
+                .vehicleExtras(Collections.emptyList())
                 .regMilPow(RegMilPow.builder()
                         .registrationDate(YearMonth.of(2018, 4).toString())
                         .mileage(62579)
