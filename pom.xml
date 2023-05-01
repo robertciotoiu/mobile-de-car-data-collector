@@ -27,7 +27,7 @@
         <java.version>17</java.version>
         <spring.version>3.0.4</spring.version>
         <lombok.version>1.18.22</lombok.version>
-        <jacoco.version>0.8.8</jacoco.version>
+        <jacoco.version>0.8.10</jacoco.version>
         <!--TODO: improve the coverage-->
         <jacoco.minimum.coverage>0.20</jacoco.minimum.coverage>
         <sonar.coverage.jacoco.xmlReportPaths>
