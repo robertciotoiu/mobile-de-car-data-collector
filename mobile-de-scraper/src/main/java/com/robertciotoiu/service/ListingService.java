@@ -1,6 +1,5 @@
 package com.robertciotoiu.service;
 
-import com.robertciotoiu.data.ListingPersistor;
 import com.robertciotoiu.service.extractor.listing.ListingsExtractor;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;

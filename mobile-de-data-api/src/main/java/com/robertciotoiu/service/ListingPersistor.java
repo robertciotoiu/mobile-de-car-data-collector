@@ -1,6 +1,6 @@
-package com.robertciotoiu.data;
+package com.robertciotoiu.service;
 
-import com.robertciotoiu.data.model.Listing;
+import com.robertciotoiu.data.model.raw.Listing;
 import com.robertciotoiu.data.repository.ListingRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

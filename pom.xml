@@ -17,6 +17,7 @@
         <module>mobile-de-shared</module>
         <module>mobile-de-coverage-report-aggregate</module>
         <module>mobile-de-rabbitmq</module>
+        <module>mobile-de-data-api</module>
     </modules>
 
     <properties>

@@ -1,4 +1,4 @@
-package com.robertciotoiu.data.model;
+package com.robertciotoiu.data.model.raw;
 
 import lombok.Builder;
 import lombok.Data;
@@ -21,11 +21,11 @@ public class Listing {
     private String imgUrl;
     private boolean isNew;
     private boolean isElectric;
+    private List<String> vehicleExtras;
     private LocalDateTime postedDate;
     private RegMilPow regMilPow;
     private TypeStatusFuelGearboxHuDoors typeStatusFuelGearboxHuDoors;
     private ConsumptionEmissions consumptionEmissions;
-    private List<String> vehicleExtras;
     private Seller seller;
     private PriceData priceData;
 }

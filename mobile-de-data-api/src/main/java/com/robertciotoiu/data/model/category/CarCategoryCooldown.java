@@ -1,4 +1,4 @@
-package com.robertciotoiu.cooldown.data;
+package com.robertciotoiu.data.model.category;
 
 import lombok.Builder;
 import lombok.Data;

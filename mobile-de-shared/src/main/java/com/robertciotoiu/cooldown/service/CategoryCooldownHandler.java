@@ -1,7 +1,7 @@
 package com.robertciotoiu.cooldown.service;
 
-import com.robertciotoiu.cooldown.data.CarCategoryCooldown;
-import com.robertciotoiu.cooldown.data.CarCategoryCooldownRepository;
+import com.robertciotoiu.data.model.category.CarCategoryCooldown;
+import com.robertciotoiu.data.repository.CarCategoryCooldownRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
