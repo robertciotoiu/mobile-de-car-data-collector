@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.robertciotoiu</groupId>
-    <artifactId>mobile-de-car-data-ingestor</artifactId>
+    <artifactId>mobile-de-car-data-collector</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>mobile-de-car-data-ingestor</name>
-    <description>Mobile.de car data ingestor</description>
+    <name>mobile-de-car-data-collector</name>
+    <description>Mobile.de car data collector</description>
     <modules>
         <module>mobile-de-data-layer</module>
         <module>mobile-de-crawler</module>

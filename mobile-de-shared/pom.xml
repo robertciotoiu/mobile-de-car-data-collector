@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>com.robertciotoiu</groupId>
-        <artifactId>mobile-de-car-data-ingestor</artifactId>
+        <artifactId>mobile-de-car-data-collector</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 

@@ -3,6 +3,7 @@ package com.robertciotoiu.controller;
 import com.robertciotoiu.data.model.raw.Listing;
 import com.robertciotoiu.data.repository.ListingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
