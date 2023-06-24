@@ -11,7 +11,7 @@
     <artifactId>mobile-de-shared</artifactId>
     <packaging>jar</packaging>
 
-    <name>shared</name>
+    <name>mobile-de-shared</name>
     <url>http://maven.apache.org</url>
 
     <properties>
