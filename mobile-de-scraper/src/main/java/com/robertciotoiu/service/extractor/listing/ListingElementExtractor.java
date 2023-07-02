@@ -1,6 +1,6 @@
 package com.robertciotoiu.service.extractor.listing;
 
-import com.robertciotoiu.data.model.*;
+import com.robertciotoiu.data.model.raw.*;
 import com.robertciotoiu.exception.ListingIdNotFoundError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

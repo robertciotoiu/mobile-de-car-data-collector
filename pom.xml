@@ -9,14 +9,16 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>mobile-de-car-data-ingestor</name>
-    <description>Mobile.de car data ingestor</description>
+    <name>mobile-de-car-data-collector</name>
+    <description>Mobile.de car data collector</description>
     <modules>
+        <module>mobile-de-data-layer</module>
         <module>mobile-de-crawler</module>
         <module>mobile-de-scraper</module>
         <module>mobile-de-shared</module>
         <module>mobile-de-coverage-report-aggregate</module>
         <module>mobile-de-rabbitmq</module>
+        <module>mobile-de-data-api</module>
     </modules>
 
     <properties>
@@ -24,8 +26,9 @@
         <mobilede.scraper.version>1.0-SNAPSHOT</mobilede.scraper.version>
         <mobilede.shared.version>1.0-SNAPSHOT</mobilede.shared.version>
         <mobilede.rabbitmq.version>1.0-SNAPSHOT</mobilede.rabbitmq.version>
+        <mobilede.data.layer.version>1.0-SNAPSHOT</mobilede.data.layer.version>
         <java.version>17</java.version>
-        <spring.version>3.0.4</spring.version>
+        <spring.version>3.1.1</spring.version>
         <lombok.version>1.18.22</lombok.version>
         <jacoco.version>0.8.8</jacoco.version>
         <!--TODO: improve the coverage-->

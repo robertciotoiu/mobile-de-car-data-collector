@@ -11,7 +11,7 @@
     <artifactId>mobile-de-shared</artifactId>
     <packaging>jar</packaging>
 
-    <name>shared</name>
+    <name>mobile-de-shared</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -45,15 +45,15 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.robertciotoiu</groupId>
+            <artifactId>mobile-de-data-layer</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

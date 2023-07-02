@@ -1,6 +1,7 @@
 package com.robertciotoiu.service;
 
 import com.robertciotoiu.CarCategoryParsableUrlExtractor;
+import com.robertciotoiu.MobileDeCrawlerApplication;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.File;
 import java.io.IOException;
 
-@SpringBootTest
+@SpringBootTest(classes = MobileDeCrawlerApplication.class)
 class CarCategoryParsableUrlExtractorTest {
     @Autowired
     CarCategoryParsableUrlExtractor carCategoryParsableUrlExtractor;

@@ -1,8 +1,8 @@
 package com.robertciotoiu.service;
 
-import com.robertciotoiu.cooldown.data.CarCategoryCooldown;
-import com.robertciotoiu.cooldown.data.CarCategoryCooldownRepository;
 import com.robertciotoiu.cooldown.service.CategoryCooldownHandler;
+import com.robertciotoiu.data.model.category.CarCategoryCooldown;
+import com.robertciotoiu.data.repository.CarCategoryCooldownRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;

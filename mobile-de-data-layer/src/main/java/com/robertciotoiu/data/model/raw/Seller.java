@@ -1,4 +1,4 @@
-package com.robertciotoiu.data.model;
+package com.robertciotoiu.data.model.raw;
 
 import lombok.Builder;
 import lombok.Data;
