@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: mobile-de-mongodb
-          image: mongo:latest
+          image: mongo:7.0.14
           ports:
             - containerPort: 27017
           env:
