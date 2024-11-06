@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-import static com.robertciotoiu.service.CarCategoryMetadataService.isFirstPage;
-
 @Service
 public class ScraperService {
     private static final Logger logger = LogManager.getLogger(ScraperService.class);
@@ -51,6 +49,6 @@ public class ScraperService {
     }
 
     private boolean isScrapable(String carSpecPageUrl) {
-        return !isFirstPage(carSpecPageUrl) || !categoryCooldownHandler.hasCooldown(carSpecPageUrl);
+        return !carCategoryMetadataService.isFirstPage(carSpecPageUrl) || !categoryCooldownHandler.hasCooldown(carSpecPageUrl);
     }
 }

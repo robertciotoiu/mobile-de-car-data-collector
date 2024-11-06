@@ -13,7 +13,7 @@ import java.util.List;
 
 @Component
 public class ListingsExtractor {
-    private static final String LISTING_CLASS_NAME_XPATH = "//div[contains(@class,'cBox-body--resultitem')]";
+    private static final String LISTING_CLASS_NAME_XPATH = "span[data-testid^=result-listing-]";
     private static final String TOP_LISTING_CLASS_NAME = "//div[contains(@class,'cBox-body--topResultitem')]";
     private static final String AD_LISTING_CLASS_NAME = "//div[contains(@class,'cBox-body--eyeCatcher')]";
     @Autowired
@@ -35,7 +35,7 @@ public class ListingsExtractor {
 
     private List<Listing> extractListings(Document carSpecPage, String carSpecPageUrl, String xpath) {
         var listings = new ArrayList<Listing>();
-        var listingsElements = carSpecPage.selectXpath(xpath);
+        var listingsElements = carSpecPage.select(xpath);
         var carCategory = extractCarCategory(carSpecPageUrl);
 
         for (var listingElement : listingsElements) {

@@ -20,7 +20,7 @@ public class CarCategoryMetadataService {
         }
     }
 
-    public static boolean isFirstPage(String carSpecPageUrl) {
+    public boolean isFirstPage(String carSpecPageUrl) {
         return !carSpecPageUrl.contains("pageNumber");
     }
 }
